@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-// use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Gate;
 
 use App\Models\{Order, Product, Review, User};
 use App\Policies\{OrderPolicy, ProductPolicy, ReviewPolicy, PointPolicy};
@@ -30,8 +30,8 @@ class AuthServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
-        $this->registerPolicies();
-        //
-    }
+{
+    $this->registerPolicies();
+}
+
 }

@@ -17,7 +17,9 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
+        User::firstOrCreate(
+            ['email' => 'najibfikri13@gmail.com'],
+            [
             "fullname" => "Moh. Najib Fikri",
             "username" => "pStar7",
             "email" => "najibfikri13@gmail.com",
@@ -31,8 +33,27 @@ class UserSeeder extends Seeder
             "point" => 0,
             'remember_token' => Str::random(30),
         ]);
+        
+        User::firstOrCreate(
+            ["email" => "brisbanesihombing5@gmail.com"],
+            [
+            "fullname" => "Brisbane Jovan",
+            "username" => "jovan",
+            "email" => "brisbanesihombing5@gmail.com",
+            "password" => Hash::make("4321"),
+            "image" => env("IMAGE_PROFILE"),
+            "phone" => "082345659988",
+            "gender" => "M",
+            "address" => "Jalan jalan pagi",
+            "role_id" => 3,
+            "coupon" => 0,
+            "point" => 0,
+            'remember_token' => Str::random(30),
+        ]);
 
-        User::create([
+        User::firstOrCreate(
+            ["email" => "member@gmail.com"],
+            [
             "fullname" => "Patrick Star",
             "username" => "its_me",
             "email" => "member@gmail.com",
@@ -47,7 +68,9 @@ class UserSeeder extends Seeder
             'remember_token' => Str::random(30),
         ]);
 
-        User::create([
+        User::firstOrCreate(
+            ["email" => "squidy@gmail.com"],
+            [
             "fullname" => "Squidy",
             "username" => "goodman",
             "email" => "squidy@gmail.com",

@@ -20,8 +20,11 @@
 </div>
 
 @can('is_admin')
-@include('/partials/home/home_admin')
+    @include('/partials/home/home_admin')
+@elseif(auth()->user()->role->role_name === 'owner')
+    @include('partials/home/home_owner')
 @else
-@include('/partials/home/home_customers')
+    @include('partials/home/home_customers')
 @endcan
+
 @endsection
