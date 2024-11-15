@@ -21,7 +21,7 @@
 
 @can('is_admin')
     @include('/partials/home/home_admin')
-@elseif(auth()->user()->role->role_name === 'owner')
+@elseif(auth()->user()->role->role_name === 'Owner')
     @include('partials/home/home_owner')
 @else
     @include('partials/home/home_customers')
