@@ -343,15 +343,27 @@ class OrderController extends Controller
     public function orderHistory()
     {
         $title = "History Data";
-        if (auth()->user()->role_id == Role::ADMIN_ID) {
-            $orders = Order::with("bank", "note", "payment", "user", "status", "product")->where(["is_done" => 1])->orderBy("id", "ASC")->get();
+    
+        // Cek jika role user adalah admin atau owner
+        if (auth()->user()->role_id == Role::ADMIN_ID || auth()->user()->role_id == Role::OWNER_ID) {
+            // Admin dan Owner dapat melihat semua order yang sudah selesai
+            $orders = Order::with("bank", "note", "payment", "user", "status", "product")
+                           ->where(["is_done" => 1])
+                           ->orderBy("id", "ASC")
+                           ->get();
         } else {
-            $orders = Order::with("bank", "note", "payment", "user", "status", "product")->where(["user_id" => auth()->user()->id, "is_done" => 1])->orderBy("id", "ASC")->get();
+            // Jika bukan admin atau owner, hanya dapat melihat pesanan mereka sendiri
+            $orders = Order::with("bank", "note", "payment", "user", "status", "product")
+                           ->where(["user_id" => auth()->user()->id, "is_done" => 1])
+                           ->orderBy("id", "ASC")
+                           ->get();
         }
+    
         $status = Status::all();
-
+    
         return view("/order/order_data", compact("title", "orders", "status"));
     }
+    
 
 
     public function getProofOrder(Order $order)

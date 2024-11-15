@@ -10,25 +10,17 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     *
-     * @return void
-     */
-    public function register()
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     *
-     * @return void
-     */
     public function boot()
     {
+        // Gate untuk admin saja
         Gate::define("is_admin", function (User $user) {
             return $user->role_id === Role::ADMIN_ID;
         });
+        
+        // Gate untuk owner saja
+        Gate::define("is_owner", function (User $user) {
+            return $user->role_id === Role::OWNER_ID;
+        });
+
     }
 }

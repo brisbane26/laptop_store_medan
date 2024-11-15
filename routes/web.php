@@ -107,7 +107,7 @@ Route::middleware(['auth'])->group(function () {
 
     // transaction
     Route::controller(TransactionController::class)->group(function () {
-        Route::get("/transaction", "index")->can("is_admin");
+        Route::get("/transaction", "index");
         Route::get("/transaction/add_outcome", "addOutcomeGet")->can("is_admin");
         Route::post("/transaction/add_outcome", "addOutcomePost")->can("is_admin");
         Route::get("/transaction/edit_outcome/{transaction}", "editOutcomeGet")->can("is_admin");

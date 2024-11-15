@@ -2,6 +2,7 @@
     <div class="sb-sidenav-menu">
         <div class="nav">
             @can("is_admin")
+            <!-- Sidebar untuk Admin -->
             <div class="sb-sidenav-menu-heading">Administrator</div>
             <a class="nav-link" href="/home">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-tachometer-alt"></i></div>
@@ -15,7 +16,29 @@
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dollar-sign"></i></div>
                 Transaksi
             </a>
-            @else
+
+            @endcan
+
+            @can("is_owner")
+            <!-- Sidebar untuk Owner -->
+            <div class="sb-sidenav-menu-heading">Owner</div>
+            <a class="nav-link" href="/home">
+                <div class="sb-nav-link-icon"><i class="fas fa-fw fa-tachometer-alt"></i></div>
+                Dashboard
+            </a>
+            <a class="nav-link" href="/home/customers">
+                <div class="sb-nav-link-icon"><i class="fas fa-fw fa-solid fa-users"></i></div>
+                Customers
+            </a>
+            <a class="nav-link" href="/transaction">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dollar-sign"></i></div>
+                Transaksi
+            </a>
+            @endcan
+
+            @cannot("is_admin")
+            @cannot("is_owner")
+            <!-- Sidebar untuk Customer -->
             <div class="sb-sidenav-menu-heading">Customer</div>
             <a class="nav-link" href="/home">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-home-alt"></i></i></div>
@@ -25,8 +48,10 @@
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-paw"></i></div>
                 My Point
             </a>
-            @endcan
+            @endcannot
+            @endcannot
 
+            <!-- Bagian Interface untuk semua role -->
             <div class="sb-sidenav-menu-heading">Interface</div>
             <a class="nav-link" href="/product">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dumpster"></i></div>

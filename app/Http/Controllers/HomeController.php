@@ -17,12 +17,16 @@ class HomeController extends Controller
     }
 
     public function customers()
-    {
-        $this->authorize("is_admin");
-
-        $title = "Customers";
-        $customers = User::with("role")->get();
-
-        return view("home/customers",  compact("title", "customers"));
+{
+    // Memeriksa apakah pengguna memiliki role_id admin (1) atau owner (3)
+    if (!in_array(auth()->user()->role_id, [Role::ADMIN_ID, Role::OWNER_ID])) {
+        abort(403, 'This action is unauthorized.');
     }
+
+    $title = "Customers";
+    $customers = User::with("role")->get();
+
+    return view("home/customers", compact("title", "customers"));
+}
+
 }
