@@ -4,12 +4,14 @@
 <link rel="stylesheet" type="text/css" href="/css/home.css" />
 @endpush
 
-@can('is_admin')
-@push('scripts-dependencies')
-<script src="/js/sales_chart.js"></script>
-<script src="/js/profits_chart.js"></script>
-@endpush
-@endcan
+{{-- Tambahkan kondisi untuk memuat script jika pengguna adalah admin atau owner --}}
+
+@if(auth()->user()->role->id == 1 || auth()->user()->role->id == 3)
+    @push('scripts-dependencies')
+        <script src="/js/sales_chart.js"></script>
+        <script src="/js/profits_chart.js"></script>
+    @endpush
+@endif
 
 @section('content')
 
@@ -21,7 +23,7 @@
 
 @can('is_admin')
     @include('/partials/home/home_admin')
-@elseif(auth()->user()->role->role_name === 'Owner')
+@elseif(auth()->user()->role->id === 3)
     @include('partials/home/home_owner')
 @else
     @include('partials/home/home_customers')
