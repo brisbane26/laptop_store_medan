@@ -1,6 +1,6 @@
 <nav class="sb-topnav navbar navbar-expand navbar-light bg-light">
 
-  <a class="navbar-brand ps-3" href="/home">Laracoffee</i> </a>
+  <a class="navbar-brand ps-3" href="/home">Laptop Store Medan</i> </a>
 
   <!-- Sidebar Toggle-->
   <button class="btn btn-link btn-light btn-sm order-1 order-lg-0 me-3 me-lg-0" id="sidebarToggle" href="#!"><i
