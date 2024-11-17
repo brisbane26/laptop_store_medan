@@ -122,7 +122,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // chart
-    Route::middleware(['can:is_admin'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         // sales chart
         Route::get("/chart/sales_chart", function () {
             $oneWeekAgo = DB::select(DB::raw('SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 DAY), "%Y-%m-%d") AS date'))[0]->date;
