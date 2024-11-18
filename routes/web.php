@@ -81,6 +81,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get("/order/delete_proof/{order}", "deleteProof")->can("delete_proof", "order");
         Route::post("/order/cancel_order/{order}", "cancelOrder")->can("cancel_order", "order");
         Route::post("/order/upload_proof/{order}", "uploadProof")->can("upload_proof", "order");
+        Route::get('/order/invoice/{orderId}', [OrderController::class, 'downloadInvoice']);
+
 
         // admin only
         Route::post("/order/reject_order/{order}/{product}", "rejectOrder")->can("reject_order", App\Models\Order::class);
