@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Support\Facades\{Auth, Storage, Validator};
 use App\Models\{Order, Status, Product, Role, Transaction, User};
+use Mpdf\Mpdf;
 
 class OrderController extends Controller
 {
@@ -488,4 +489,29 @@ class OrderController extends Controller
 
         return redirect("/order/edit_order/" . $order->id);
     }
+
+    // Method untuk mendownload invoice
+    public function downloadInvoice($orderId)
+{
+    // Ambil data order
+    $order = Order::with(['product', 'user', 'payment', 'status', 'note'])->findOrFail($orderId);
+    
+    // Data untuk view invoice
+    $data = compact('order');
+    
+    // Load view untuk invoice
+    $pdfContent = view('partials.order.invoice', $data)->render();
+    
+    try {
+        $pdf = new Mpdf();
+        $pdf->WriteHTML($pdfContent);
+        return $pdf->Output('invoice-' . $order->id . '.pdf', 'D');
+    } catch (\Mpdf\MpdfException $e) {
+        // Jika terjadi error, log pesan error dan tampilkan pesan yang sesuai
+        \Log::error('mPDF Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to generate PDF'], 500);
+    }
+    
+}
+
 }
