@@ -59,4 +59,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Review::class);
     }
+
+    public function isOwner()
+    {
+        return $this->role->role_name === 'Owner';
+    }
 }
