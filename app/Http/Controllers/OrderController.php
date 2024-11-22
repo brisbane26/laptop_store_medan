@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Auth\Events\Failed;
 use Illuminate\Support\Facades\{Auth, Storage, Validator};
 use App\Models\{Order, Status, Product, Role, Transaction, User};
+use Mpdf\Mpdf;
 
 class OrderController extends Controller
 {
@@ -343,15 +344,27 @@ class OrderController extends Controller
     public function orderHistory()
     {
         $title = "History Data";
-        if (auth()->user()->role_id == Role::ADMIN_ID) {
-            $orders = Order::with("bank", "note", "payment", "user", "status", "product")->where(["is_done" => 1])->orderBy("id", "ASC")->get();
+    
+        // Cek jika role user adalah admin atau owner
+        if (auth()->user()->role_id == Role::ADMIN_ID || auth()->user()->role_id == Role::OWNER_ID) {
+            // Admin dan Owner dapat melihat semua order yang sudah selesai
+            $orders = Order::with("bank", "note", "payment", "user", "status", "product")
+                           ->where(["is_done" => 1])
+                           ->orderBy("id", "ASC")
+                           ->get();
         } else {
-            $orders = Order::with("bank", "note", "payment", "user", "status", "product")->where(["user_id" => auth()->user()->id, "is_done" => 1])->orderBy("id", "ASC")->get();
+            // Jika bukan admin atau owner, hanya dapat melihat pesanan mereka sendiri
+            $orders = Order::with("bank", "note", "payment", "user", "status", "product")
+                           ->where(["user_id" => auth()->user()->id, "is_done" => 1])
+                           ->orderBy("id", "ASC")
+                           ->get();
         }
+    
         $status = Status::all();
-
+    
         return view("/order/order_data", compact("title", "orders", "status"));
     }
+    
 
 
     public function getProofOrder(Order $order)
@@ -476,4 +489,29 @@ class OrderController extends Controller
 
         return redirect("/order/edit_order/" . $order->id);
     }
+
+    // Method untuk mendownload invoice
+    public function downloadInvoice($orderId)
+{
+    // Ambil data order
+    $order = Order::with(['product', 'user', 'payment', 'status', 'note'])->findOrFail($orderId);
+    
+    // Data untuk view invoice
+    $data = compact('order');
+    
+    // Load view untuk invoice
+    $pdfContent = view('partials.order.invoice', $data)->render();
+    
+    try {
+        $pdf = new Mpdf();
+        $pdf->WriteHTML($pdfContent);
+        return $pdf->Output('invoice-' . $order->id . '.pdf', 'D');
+    } catch (\Mpdf\MpdfException $e) {
+        // Jika terjadi error, log pesan error dan tampilkan pesan yang sesuai
+        \Log::error('mPDF Error: ' . $e->getMessage());
+        return response()->json(['error' => 'Failed to generate PDF'], 500);
+    }
+    
+}
+
 }

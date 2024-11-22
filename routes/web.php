@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController};
+use App\Http\Controllers\{AuthController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController};
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +81,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get("/order/delete_proof/{order}", "deleteProof")->can("delete_proof", "order");
         Route::post("/order/cancel_order/{order}", "cancelOrder")->can("cancel_order", "order");
         Route::post("/order/upload_proof/{order}", "uploadProof")->can("upload_proof", "order");
+        Route::get('/order/invoice/{orderId}', [OrderController::class, 'downloadInvoice']);
+
 
         // admin only
         Route::post("/order/reject_order/{order}/{product}", "rejectOrder")->can("reject_order", App\Models\Order::class);
@@ -107,7 +109,7 @@ Route::middleware(['auth'])->group(function () {
 
     // transaction
     Route::controller(TransactionController::class)->group(function () {
-        Route::get("/transaction", "index")->can("is_admin");
+        Route::get("/transaction", "index");
         Route::get("/transaction/add_outcome", "addOutcomeGet")->can("is_admin");
         Route::post("/transaction/add_outcome", "addOutcomePost")->can("is_admin");
         Route::get("/transaction/edit_outcome/{transaction}", "editOutcomeGet")->can("is_admin");
@@ -122,7 +124,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // chart
-    Route::middleware(['can:is_admin'])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         // sales chart
         Route::get("/chart/sales_chart", function () {
             $oneWeekAgo = DB::select(DB::raw('SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 DAY), "%Y-%m-%d") AS date'))[0]->date;
@@ -175,4 +177,9 @@ Route::middleware(['auth'])->group(function () {
 
     // Logout
     Route::post('/auth/logout', [AuthController::class, "logoutPost"]);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 });

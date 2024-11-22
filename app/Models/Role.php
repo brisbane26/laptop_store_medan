@@ -12,6 +12,7 @@ class Role extends Model
 
     public const ADMIN_ID = 1; // for admin
     public const CUSTOMER_ID = 2; // for customer
+    public const OWNER_ID = 3; // for owner
 
     public function users()
     {
