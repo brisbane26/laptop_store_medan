@@ -9,87 +9,87 @@ var couponTotal;
 var currentNum = 0;
 var couponUsed = 0;
 
-var quantity;
+var quantities = [];
+var prices = [];
+var shipping = 0; // Ensure shipping cost is retained
 
 $(document).ready(function () {
-    quantity = parseInt($("#quantity").val());
-    price = parseInt($("#product_price").attr("data-truePrice"));
-    sub_total = price * quantity;
-    shipping = $("#total_price").val() - sub_total;
+    updateOrderSummary();
 
-    $("#sub-total").val(sub_total);
-    $("#sub-total").html(sub_total);
+    getLokasi();
 
-    $("#shipping").attr("data-shippingCost", shipping);
-    $("#shipping").html(shipping);
+    $("#province").on("change", function (e) {
+        e.preventDefault();
+        var option = $("option:selected", this).val();
+        $("#city option:gt(0)").remove();
+        $("#kurir").val("");
+
+        if (option === "") {
+            alert("Please select a valid province.");
+            $("#city").prop("disabled", true);
+        } else {
+            $("#city").prop("disabled", false);
+            getCity(option);
+        }
+    });
+
+    $("#city").on("change", function () {
+        setCity();
+    });
 });
 
 function changeStatesCoupon() {
     isUseCoupon = !isUseCoupon;
 }
 
-// ================ order summary ==================
+// ================== Order Summary ====================
 var sub_total;
 var total;
-var shipping;
-// ===============================================
 
-// counter order summary [buat ]
-function myCounter() {
-    var num = parseInt($("#quantity").val());
-    var price = parseInt($("#product_price").attr("data-truePrice"));
-    shipping = parseInt($("#shipping").attr("data-shippingCost"));
+// Update the order summary based on all products
+function updateOrderSummary() {
+    sub_total = 0;
 
-    if (quantity != null && product_id != null && destinasi != null) {
-        setOngkir({ destination: destinasi, quantity: num });
+    // Iterate through all products and calculate subtotal
+    $("input[id^='quantity_']").each(function (index) {
+        var quantity = parseInt($(this).val()) || 0;
+        // Get price per piece from the associated span
+        var priceElement = $(this).closest(".row").find("span[data-price]");
+        var price = parseFloat(priceElement.data("price")) || 0;
+
+        quantities[index] = quantity;
+        prices[index] = price;
+
+        sub_total += quantity * price;
+    });
+
+    // Apply coupon logic
+    if (isUseCoupon && couponUsed > 0) {
+        sub_total -= couponUsed * prices[0];
     }
 
-    if (isUseCoupon && couponTotal > 0 && currentNum < num) {
-        // ketika user menggunakan coupon
-        couponTotal = couponTotal - 1;
-        couponUsed = couponUsed + 1;
-    } else if (isUseCoupon && couponUsed > 0 && currentNum > num) {
-        couponTotal = couponTotal + 1;
-        couponUsed = couponUsed - 1;
-    } else if (!isUseCoupon && couponUsed > 0) {
-        couponTotal = couponTotal + 1;
-        couponUsed = couponUsed - 1;
-    }
+    total = sub_total + shipping; // Keep shipping cost in the total calculation
 
-    sub_total = price * (num - couponUsed);
-    total = sub_total + shipping;
-
-    $("#coupon").html(`${couponTotal} coupon`);
-    $("#couponUsed").val(couponUsed);
-    $("#couponUsedShow").html(`${couponUsed} coupon`);
-
-    refresh_data({ sub_total: sub_total, total: total });
-    currentNum = num;
+    refresh_data({ sub_total, total, shipping });
 }
 
+
 function refresh_data({ sub_total = 0, shipping = 0, total = 0 }) {
-    if (total >= 0) {
-        $("#total_price").val(total);
-        $("#total").html(total);
-    }
-    if (sub_total >= 0) {
-        $("#sub-total").html(sub_total);
-    }
+    $("#sub-total").html(sub_total);
+    $("#total_price").val(total);
+    $("#total").html(total);
+
     if (shipping >= 0) {
         $("#shipping").attr("data-shippingCost", shipping);
         $("#shipping").html(shipping);
     }
 }
 
-// ===================================  Ongkir  =======================================
-// ==== DATA ====
-var product_id;
+// =================================== Ongkir =======================================
 var destinasi;
 
-// ==============
-
 function getLokasi() {
-    $op = $("#province");
+    var $op = $("#province");
 
     $.getJSON("/shipping/province", function (data) {
         $.each(data, function (i, field) {
@@ -101,45 +101,6 @@ function getLokasi() {
                     "</option>"
             );
         });
-    });
-}
-
-getLokasi();
-
-$("#province").on("change", function (e) {
-    e.preventDefault();
-    var option = $("option:selected", this).val();
-    $("#city option:gt(0)").remove();
-    $("#kurir").val("");
-
-    if (option === "") {
-        alert("null");
-        $("#city").prop("disabled", true);
-        $("#kurir").prop("disabled", true);
-    } else {
-        $("#city").prop("disabled", false);
-        getCity(option);
-    }
-});
-
-var currentCity = "0";
-$("#city").on("click", function (e) {
-    console.log("hehe" + $(this).val());
-    console.log("hehe" + currentCity);
-    if ($(this).val() != currentCity) {
-        console.log("jalanninh");
-        currentCity = $(this).val();
-        setCity();
-    }
-});
-
-function setCity() {
-    destinasi = $("#city").val();
-    quantity = $("#quantity").val();
-
-    setOngkir({
-        destination: destinasi,
-        quantity: quantity,
     });
 }
 
@@ -161,8 +122,17 @@ function getCity(province_id) {
     });
 }
 
+function setCity() {
+    destinasi = $("#city").val();
+
+    setOngkir({
+        destination: destinasi,
+        quantity: quantities.reduce((a, b) => a + b, 0), // Sum of all quantities
+    });
+}
+
 function setOngkir({
-    origin = 42, // banyuwangi
+    origin = 42, // Banyuwangi
     destination,
     quantity,
     courier = "jne",
@@ -173,15 +143,13 @@ function setOngkir({
             sub_total: 0,
             total: 0,
         });
-
         return;
     }
+
     destination = parseInt(destination);
-    quantity = parseInt(quantity);
 
     setVisible("#transaction", false);
     setVisible("#loading_transaction", true);
-    console.log("jalan dahal");
 
     $.ajax({
         url: `/shipping/cost/${origin}/${destination}/${quantity}/${courier}`,
@@ -190,38 +158,45 @@ function setOngkir({
         success: function (data) {
             var city = $("#city option:selected");
             var province = $("#province option:selected");
-            $("#shipping_address").val(city.html() + ", " + province.html());
-            shipping = data[0]["costs"][0]["cost"][0]["value"];
+
+            // Ambil alamat lengkap dari input address
+            var addressDetail = $("#address").val(); 
+
+            // Gabungkan alamat lengkap dengan kota dan provinsi
+            $("#shipping_address").val(addressDetail + ", " + city.html() + ", " + province.html());
+
+            shipping = data[0]["costs"][0]["cost"][0]["value"]; // Update shipping cost
             total = sub_total + shipping;
-            refresh_data({
-                shipping: shipping,
-                sub_total: sub_total,
-                total: total,
-            });
+
+            refresh_data({ shipping, sub_total, total });
 
             setVisible("#transaction", true);
             setVisible("#loading_transaction", false);
-            console.log("end");
         },
     });
 }
 
-// cancel order
+
+// ========================== Event Listeners ============================
+$("input[id^='quantity_']").on("change", function () {
+    updateOrderSummary();
+});
+
 $("#button_edit_order").click(function (e) {
     e.preventDefault();
     Swal.fire({
         title: "Are you sure?",
-        text: "order data will be changed",
+        text: "Order data will be updated.",
         icon: "warning",
         confirmButtonText: "Confirm",
-        cancelButtonColor: "#d33",
+        cancelButtonText: "Cancel",
         showCancelButton: true,
         confirmButtonColor: "#08a10b",
-        timer: 10000,
+        cancelButtonColor: "#d33",
     }).then((result) => {
         if (result.isConfirmed) {
             $("#form_edit_order").submit();
-        } else if (result.isDismissed) {
+        } else {
             Swal.fire("Action canceled", "", "info");
         }
     });

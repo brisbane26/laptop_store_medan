@@ -69,10 +69,13 @@
                                     <a href="/product/edit_product/{{ $row->id }}"><button
                                           class="btn btn-primary btn-sm ubah">Edit</button></a>
                                     @endcan
-                                    @can('create_order',App\Models\Order::class)
-                                    <a href="/order/make_order/{{ $row->id }}"><button
-                                          class="btn btn-primary btn-sm ubah">Buy</button></a>
-                                    @endcan
+                                    @can('create_order', App\Models\Order::class)
+                                    <button 
+                                        data-id="{{ $row->id }}" 
+                                        class="btn btn-primary btn-sm add-to-cart">
+                                        Add to Cart
+                                    </button>
+                                    @endcan                                    
                                 </div>
                             </div>
                         </div>

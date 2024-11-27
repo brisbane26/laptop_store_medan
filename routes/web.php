@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController};
+use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController};
 
 /*
 |--------------------------------------------------------------------------
@@ -54,7 +54,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Product
     Route::controller(ProductController::class)->group(function () {
-        Route::get("/product", "index");
+        Route::get('/product', [ProductController::class, 'index'])->name('products.index');
         Route::get("/product/data/{id}", "getProductData");
 
         // admin only
@@ -74,8 +74,8 @@ Route::middleware(['auth'])->group(function () {
 
 
         // customer only
-        Route::get("/order/make_order/{product:id}", "makeOrderGet")->can("create_order", App\Models\Order::class);
-        Route::post("/order/make_order/{product:id}", "makeOrderPost")->can("create_order", App\Models\Order::class);
+        Route::get('/order/make_order', [OrderController::class, 'makeOrderGet'])->name('order.make_order')->middleware('auth');
+        Route::post("/order/make_order", [OrderController::class, 'makeOrderPost'])->can("create_order", App\Models\Order::class)->name('order.make_order');
         Route::get("/order/edit_order/{order}", "editOrderGet")->can("edit_order", "order");
         Route::post("/order/edit_order/{order}", "editOrderPost")->can("edit_order", "order");
         Route::get("/order/delete_proof/{order}", "deleteProof")->can("delete_proof", "order");
@@ -85,9 +85,9 @@ Route::middleware(['auth'])->group(function () {
 
 
         // admin only
-        Route::post("/order/reject_order/{order}/{product}", "rejectOrder")->can("reject_order", App\Models\Order::class);
-        Route::post("/order/end_order/{order}/{product}", "endOrder")->can("end_order", App\Models\Order::class);
-        Route::post("/order/approve_order/{order}/{product}", "approveOrder")->can("approve_order", App\Models\Order::class);
+        Route::post("/order/reject_order/{order}", "rejectOrder")->can("reject_order", App\Models\Order::class);
+        Route::post("/order/end_order/{order}", "endOrder")->can("end_order", App\Models\Order::class);
+        Route::post("/order/approve_order/{order}", "approveOrder")->can("approve_order", App\Models\Order::class);        
     });
 
     // Ongkir
@@ -174,6 +174,17 @@ Route::middleware(['auth'])->group(function () {
             echo json_encode($array_result);
         });
     });
+
+// Cart
+Route::controller(CartController::class)->middleware(['auth'])->group(function () {
+    Route::get('/cart', 'index')->name('cart.index');
+    Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::post('/cart/remove', [CartController::class, 'removeFromCart'])->name('cart.remove'); // Tambahkan nama di sini
+    Route::post('/cart/delete', [CartController::class, 'deleteFromCart'])->name('cart.delete');    // Menghapus item dari keranjang
+    Route::get('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+
+});
+
 
     // Logout
     Route::post('/auth/logout', [AuthController::class, "logoutPost"]);

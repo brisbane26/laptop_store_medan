@@ -17,6 +17,12 @@
 @section('content')
 <div class="container">
 
+  @if (session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
   <!-- flasher -->
   @if(session()->has('message'))
   {!! session("message") !!}

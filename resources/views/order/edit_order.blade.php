@@ -31,15 +31,8 @@
             <div class="card-body">
               <div class="e-profile">
                 <div class="row">
-                  <div class="col-12 col-sm-auto mb-3">
-                    <img class="img-account-profile mb-2" src="{{ asset('storage/' . $order->product->image)}}"
-                      width="200" alt="{{ $order->product->product_name }}">
-                  </div>
                   <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
                     <div class="text-sm-left mb-2 mb-sm-0">
-                      <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">
-                        {{ $order->product->product_name }}
-                      </h4>
                       <div class="text-muted">last order modified on
                         {{ $order->updated_at }}
                       </div>
@@ -76,59 +69,71 @@
                   <div class="tab-pane active">
                     <div class="row">
                       <div class="col">
+                        
                         <div class="row mb-3">
-                          <div class="col-12 col-md-6">
-                            <div class="form-group">
-                              <label for="product_name">Product Name</label>
-                              <input class="form-control" type="text" id="product_name" name="product_name"
-                                value="{{ old('product_name', $order->product->product_name) }}" disabled>
+                          <!-- Header -->
+                          <div class="col-12">
+                            <div class="row">
+                              <div class="col-6"><strong>Product Name</strong></div>
+                              <div class="col-4"><strong>Price per piece</strong></div>
+                              <div class="col-2"><strong>Quantity</strong></div>
                             </div>
                           </div>
-                          <div class="col-12 col-md-3">
-                            <div class="form-group">
-                              <label for="product_price">Price per pieces</label>
-                              @if ($order->product->discount == 0)
-                              <input type="hidden" id="product_price" name="product_price"
-                                data-truePrice="{{ old('price', $order->product->price) }}" value="Rp.
-                            {{ old('price', $order->product->price) }}" type="text" class="form-control" disabled>
-                              @else
-                              <input type="hidden" id="product_price" name="product_price"
-                                data-truePrice="{{ old('product_price', ((100 - $order->product->discount)/100) * $order->product->price) }}"
-                                value="Rp. {{ old('product_price', ((100 - $order->product->discount)/100) *$order->product->price) }}"
-                                type="text" class="form-control" disabled>
-                              @endif
-                              <div class="input-group" style="display:unset;">
-                                <div class="input-group-prepend">
-                                  @if ($order->product->discount == 0)
-                                  <span class="input-group-text">
-                                    {{ $order->product->price }}
-                                  </span>
-                                  @else
-                                  <span class="input-group-text">Rp. {{ ((100 - $order->product->discount)/100) *
-                                    $order->product->price }} <span class="strikethrough ms-4">
-                                      {{ $order->product->price }}
-                                    </span><sup><sub class="mx-1">of</sub>
-                                      {{ $order->product->discount }}%
-                                    </sup>
-                                  </span>
-                                  @endif
-                                </div>
+                        
+                          <!-- Product Details -->
+                          @foreach($order->orderDetails as $detail)
+                          <div class="col-12">
+                            <div class="row align-items-center">
+                              <!-- Product Name -->
+                              <div class="col-6">
+                                <input class="form-control" type="text" 
+                                  id="product_name_{{ $detail->id }}" 
+                                  name="product_name[]" 
+                                  value="{{ old('product_name', $detail->product->product_name) }}" 
+                                  disabled>
+                              </div>
+<!-- Price per Piece -->
+<div class="col-4">
+  <div class="input-group">
+      @if ($detail->product->discount == 0)
+      <span class="form-control text-center" 
+            data-price="{{ $detail->product->price }}">
+          Rp. {{ number_format($detail->product->price, 0, ',', '.') }}
+      </span>
+      @else
+      <span class="form-control text-center" 
+            data-price="{{ ((100 - $detail->product->discount) / 100) * $detail->product->price }}">
+          Rp. {{ number_format(((100 - $detail->product->discount) / 100) * $detail->product->price, 0, ',', '.') }} 
+          <span class="text-decoration-line-through ms-2">
+              Rp. {{ number_format($detail->product->price, 0, ',', '.') }}
+          </span>
+          <sup class="ms-1">{{ $detail->product->discount }}% off</sup>
+      </span>
+      @endif
+  </div>
+</div>
+
+                              <!-- Quantity -->
+                              <div class="col-2">
+                                <input class="form-control @error('quantity') is-invalid @enderror" 
+                                  type="number" min="0" 
+                                  id="quantity_{{ $detail->id }}" 
+                                  name="quantity_{{ $detail->id }}"
+                                  data-price="{{ $detail->product->price }}"  
+                                  data-productId="{{ $detail->product_id }}" 
+                                  placeholder="Qty" 
+                                  value="{{ old('quantity', $detail->quantity) }}" 
+                                  onchange="myCounter()">
+                                @error('quantity')
+                                <div class="text-danger">{{ $message }}</div>
+                                @enderror
                               </div>
                             </div>
                           </div>
-                          <div class="col-12 col-md-3">
-                            <div class="form-group">
-                              <label for="quantity">Quantity</label>
-                              <input class="form-control @error('quantity') is-invalid @enderror" type="number" min="0"
-                                id="quantity" name="quantity" data-productId="{{ $order->product_id }}"
-                                placeholder="Masukkan jumlah produk" value="{{ old('quantity', $order->quantity) }}"
-                                onchange="myCounter()">
-                              @error('address')
-                              <div class="text-danger">{{ $message }}</div>
-                              @enderror
-                            </div>
-                          </div>
+                          @endforeach
                         </div>
+                        
+                        
                         <div class="row mb-3">
                           <div class="col">
                             <div class="form-group">
