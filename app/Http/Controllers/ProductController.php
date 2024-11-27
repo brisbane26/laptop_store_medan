@@ -8,13 +8,19 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
-    {
-        $title = "Product";
-        $product = Product::all();
+    public function index(Request $request)
+{
+    $title = "Product";
 
-        return view('/product/index', compact("title", "product"));
-    }
+    // Filter produk berdasarkan input pencarian
+    $search = $request->input('search');
+    $product = Product::when($search, function ($query, $search) {
+        return $query->where('product_name', 'like', '%' . $search . '%');
+    })->get();
+
+    return view('/product/index', compact("title", "product", "search"));
+}
+
 
 
     public function getProductData($id)

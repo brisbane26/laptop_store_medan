@@ -32,6 +32,20 @@
         <div class="mb-5"></div>
         @endcan
 
+        <form method="GET" action="{{ route('products.index') }}" class="mb-4">
+            <div class="input-group w-50 mx-auto">
+                <input type="text" name="search" class="form-control" placeholder="Cari Produk..." value="{{ request('search') }}">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Cari</button>
+                </div>
+            </div>
+        </form>
+        @if($product->isEmpty())
+    <p class="text-center">Produk tidak ditemukan.</p>
+@endif
+
+        
+
         <div class="row justify-content-center">
             @foreach($product as $row)
             <!-- Product card -->

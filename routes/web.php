@@ -198,4 +198,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/admin/tambah_admin', [AdminController::class, 'create'])->name('admin.create');
-    Route::post('/admin/tambah_admin', [AdminController::class, 'store'])->name('admin.store');    
+    Route::post('/admin/tambah_admin', [AdminController::class, 'store'])->name('admin.store');  
+    
+    Route::get('/product', [ProductController::class, 'index'])->name('products.index');
+
