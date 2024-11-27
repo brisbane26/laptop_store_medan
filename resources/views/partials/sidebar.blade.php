@@ -16,7 +16,6 @@
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dollar-sign"></i></div>
                 Transaksi
             </a>
-
             @endcan
 
             @can("is_owner")
@@ -33,6 +32,10 @@
             <a class="nav-link" href="/transaction">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dollar-sign"></i></div>
                 Transaksi
+            </a>
+            <a class="nav-link" href="{{ route('admin.create') }}" >
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-person"></i></div>
+                Kontrol Admin
             </a>
             @endcan
 
@@ -82,4 +85,5 @@
         <div class="small">Currently logged in as:</div>
         {{ auth()->user()->role->role_name }}
     </div>
+    
 </nav>

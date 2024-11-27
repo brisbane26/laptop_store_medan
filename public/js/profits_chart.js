@@ -67,9 +67,7 @@ $(window).on("load", function () {
             }
 
             // Cek apakah ada data profit valid
-            if (montly_profit.every((value) => value === 0)) {
-                alert("Data profit kosong untuk periode ini.");
-            }
+            
 
             // Inisialisasi grafik
             let ctx = document.getElementById("profits_chart");
