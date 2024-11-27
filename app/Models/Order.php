@@ -9,7 +9,11 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'user_id', 'address', 'shipping_address', 'total_price', 
+        'payment_id', 'note_id', 'status_id', 'transaction_doc', 
+        'is_done', 'coupon_used', 'bank_id'
+    ];
 
     public function bank()
     {
@@ -40,4 +44,11 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function orderDetails()
+    {
+        return $this->hasMany(OrderDetail::class);
+    }
+    
+
 }

@@ -1,162 +1,156 @@
 import { previewImage } from "./image_preview.js";
 
 // modal order detail
+// modal order detail
 $("span.order-detail-link[title='order detail']").click(function (event) {
     setVisible("#loading", true);
-    var id = $(this).attr("data-id");
+    const id = $(this).attr("data-id");
 
     $.ajax({
-        url: "/order/data/" + id,
+        url: `/order/data/${id}`,
         method: "get",
         dataType: "json",
         success: function (response) {
-            const date = new Date(response["created_at"]).toLocaleDateString(
-                "id-id",
-                {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
+            try {
+                const date = new Date(response["created_at"]).toLocaleDateString(
+                    "id-ID",
+                    {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                    }
+                );
+
+                $("#username_detail").html(`@${response.user.username || "-"}`);
+                $("#order_date_detail").html(date || "-");
+                $("#address_detail").html(response.address || "-");
+                $("#payment_method_detail").html(
+                    response.payment?.payment_method || "-"
+                );
+                $("#bank_detail").html(
+                    response.bank?.bank_name || "-"
+                );
+                $("#account_number_detail").html(
+                    response.bank?.account_number || "-"
+                );
+                $("#total_price_detail").html(
+                    response.total_price ? `Rp${response.total_price}` : "-"
+                );
+                $("#status_detail").html(
+                    response.status?.order_status || "-"
+                );
+
+                $("#style_status_detail")
+                    .removeClass()
+                    .addClass(
+                        `spinner-grow spinner-grow-sm text-${response.status?.style || "secondary"}`
+                    );
+
+                $("#notes_transaction_detail").html(
+                    response.refusal_reason
+                        ? response.refusal_reason
+                        : response.note?.order_notes || "-"
+                );
+
+                if (response.payment_id === 1) {
+                    $("#transaction_doc_detail").attr(
+                        "src",
+                        `/storage/${response.transaction_doc || "placeholder.png"}`
+                    );
                 }
-            );
 
-            $("#username_detail").html("@" + response["user"]["username"]);
-            $("#order_date_detail").html(date);
-            $("#quantiity_detail").html(response["quantity"]);
-            $("#address_detail").html(response["address"]);
-            $("#payment_method_detail").html(
-                response["payment"]["payment_method"]
-            );
-            $("#status_detail").html(response["status"]["order_status"]);
-            $("#style_status_detail")
-                .removeClass()
-                .addClass(
-                    "spinner-grow spinner-grow-sm text-" +
-                        response["status"]["style"]
+                $("#link_bukti_transfer").attr("data-id", response.id || 0);
+                $("#form_cancel_order").attr(
+                    "action",
+                    `/order/cancel_order/${response.id || 0}`
                 );
-            $("#bank_detail").html(
-                response["bank"] ? response["bank"]["bank_name"] : ""
-            );
-            $("#account_number_detail").html(
-                response["bank"] ? response["bank"]["account_number"] : ""
-            );
-            $("#notes_transaction_detail").html(
-                response["refusal_reason"]
-                    ? response["refusal_reason"]
-                    : response["note"]["order_notes"]
-            );
-            $("#total_price_detail").html(response["total_price"]);
 
-            if (response["payment_id"] == 1) {
-                $("#transaction_doc_detail").attr(
-                    "src",
-                    "/storage/" + response["transaction_doc"]
+                $("#form_reject_order").attr(
+                    "action",
+                    `/order/reject_order/${response.id || 0}/${response.product_id || 0}`
                 );
-            }
 
-            $("#product_name_detail").html(response["product"]["product_name"]);
-            $("#image_product_detail").attr(
-                "src",
-                "/storage/" + response["product"]["image"]
-            );
-            $("#link_bukti_transfer").attr("data-id", response["id"]);
-            $("#form_cancel_order").attr(
-                "action",
-                "/order/cancel_order/" + response["id"]
-            );
-
-            // transfer proof url
-            $("#link_transfer_proof").attr(
-                "data-imageUrl",
-                "/storage/" + response["transaction_doc"]
-            );
-
-            // reject order form
-            $("#form_reject_order").attr(
-                "action",
-                "/order/reject_order/" +
-                    response["id"] +
-                    "/" +
-                    response["product_id"]
-            );
-
-            // end order form
-            $("#form_end_order").attr(
-                "action",
-                "/order/end_order/" +
-                    response["id"] +
-                    "/" +
-                    response["product_id"]
-            );
-
-            // approve order form
-            $("#form_approve_order").attr(
-                "action",
-                "/order/approve_order/" +
-                    response["id"] +
-                    "/" +
-                    response["product_id"]
-            );
-
-            // edit order
-            $("#link_edit_order").attr(
-                "href",
-                "/order/edit_order/" + response["id"]
-            );
-
-            if (response["coupon_used"] != null) {
-                $("#content-kuponUsed").html(
-                    `<span class="link-danger" style="cursor: pointer; ">` +
-                        response["coupon_used"] +
-                        ` kupon</span> digunakan untuk pemesanan ini`
+                $("#form_end_order").attr(
+                    "action",
+                    `/order/end_order/${response.id || 0}/${response.product_id || 0}`
                 );
-            } else {
-                $("#content-kuponUsed").html(
-                    `tidak ada kupon yang digunakan untuk pemesanan ini`
+
+                $("#form_approve_order").attr(
+                    "action",
+                    `/order/approve_order/${response.id || 0}/${response.product_id || 0}`
                 );
+
+                $("#link_edit_order").attr(
+                    "href",
+                    `/order/edit_order/${response.id || 0}`
+                );
+
+                if (response.coupon_used) {
+                    $("#content-kuponUsed").html(
+                        `<span class="link-danger" style="cursor: pointer;">${response.coupon_used} kupon</span> digunakan untuk pemesanan ini`
+                    );
+                } else {
+                    $("#content-kuponUsed").html(
+                        "tidak ada kupon yang digunakan untuk pemesanan ini"
+                    );
+                }
+
+                // Restrict proof of transfer for COD payment method
+                if (response.payment?.payment_method === "COD") {
+                    $("#modal_section_payment_proof").hide();
+                    $("#row_bank").hide();
+                } else {
+                    $("#modal_section_payment_proof").show();
+                    $("#row_bank").show();
+                }
+
+                if (response.status_id === 5) {
+                    $("#link_edit_order > button").hide();
+                    $("#form_cancel_order > button").hide();
+                    $("#message").show().html("Order has been canceled by user");
+                } else if (response.status_id === 3) {
+                    $("#link_edit_order").hide();
+                    $("#form_cancel_order").hide();
+                    $("#message").show().html("Order has been rejected by admin");
+                } else {
+                    $("#link_edit_order > button").show();
+                    $("#form_cancel_order > button").show();
+                    $("#message").hide();
+                }
+
+                $("#message_reject_order").hide().html("");
+
+                // Clear and populate order items (product name and quantity)
+                $("#order_items_detail").html(""); // Clear existing items
+                response.order_details.forEach(detail => {
+                    const productName = detail.product?.product_name || "-";
+                    const quantity = detail.quantity || "0";
+                    $("#order_items_detail").append(`
+                        <tr>
+                            <td>${productName}</td>
+                            <td>${quantity}</td>
+                        </tr>
+                    `);
+                });
+
+                $("#OrderDetailModal").modal("show");
+            } catch (error) {
+                console.error("Error processing response:", error);
+                alert("Terjadi kesalahan saat memuat detail order. Silakan coba lagi.");
+            } finally {
+                setVisible("#loading", false);
             }
-
-            // restrict proof of transfer for COD payment method
-            if (response["payment"]["payment_method"] == "COD") {
-                // menghilangkan element sesuai metode pembayaran
-                $("#modal_section_payment_proof").css("display", "none");
-                $("#row_bank").css("display", "none");
-            } else {
-                // to restore undisplayed elements
-                $("#modal_section_payment_proof").css("display", "unset");
-                $("#row_bank").css("display", "table-row");
-            }
-
-            // if order has been canceled by user
-            if (response["status_id"] == 5) {
-                console.log("benerkah");
-                $("#link_edit_order > button").css("display", "none");
-                $("#form_cancel_order > button").css("display", "none");
-                $("#message").css("display", "unset");
-                $("#message").html("Order has been canceled by user");
-            } else if (response["status_id"] == 3) {
-                // if order has been rejected by admin
-                $("#link_edit_order").css("display", "none");
-                $("#form_cancel_order").css("display", "none");
-                $("#message").css("display", "unset");
-                $("#message").html("Order has been rejected by admin");
-            } else {
-                // to restore undisplayed elements
-                $("#link_edit_order > button").css("display", "unset");
-                $("#form_cancel_order > button").css("display", "unset");
-                $("#message").css("display", "none");
-            }
-
-            // considered the listener on reject order
-            $("#message_reject_order").css("display", "none");
-            $("#message_reject_order").html();
-
-            $("#OrderDetailModal").modal("show");
+        },
+        error: function () {
+            alert("Gagal mengambil data order. Silakan coba lagi.");
             setVisible("#loading", false);
         },
     });
 });
 
+
+// Helper function for visibility
 const setVisible = (elementOrSelector, visible) =>
     ((typeof elementOrSelector === "string"
         ? document.querySelector(elementOrSelector)

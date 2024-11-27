@@ -25,65 +25,63 @@
       <div class="accordion" id="accordionMain">
 
         <!-- top field -->
+
         <div class="accordion-item mb-3 px-4 py-3">
-          <form action="/order/make_order/{{ $product->id }}" method="post">
+          <form action="{{ route('order.make_order') }}" method="POST">
+
             @csrf
-
-            <!-- hidden input -->
-            <input type="hidden" name="product_id" value="{{ old('product_id', $product->id) }}">
-
-            <div class="row mb-3">
-              <div class="col-md-8">
-                <div class="form-group">
-                  <label for="product_name">Product Name</label>
-                  <input id="product_name" name="product_name" value="{{ $product->product_name }}" type="text"
-                    class="form-control" disabled>
+    
+            <!-- Header -->
+            <div class="row fw-bold mb-3">
+                <div class="col-md-4">Product Name</div>
+                <div class="col-md-4">Price per pieces</div>
+                <div class="col-md-3">Quantity</div>
+            </div>
+    
+            <!-- List Produk -->
+            @foreach($cartItems as $cart)
+            <div class="row align-items-center mb-2 product-row">
+                <!-- Product Name -->
+                <div class="col-md-4">
+                    <input type="hidden" name="product_id[]" value="{{ $cart->product->id }}">
+                    <input type="text" name="product_name[]" value="{{ $cart->product->product_name }}" 
+                           class="form-control" disabled>
                 </div>
-              </div>
-              <div class="col-md-4">
-                <div class="form-group">
-                  <label for="price">Price per pieces</label>
-                  @if ($product->discount == 0)
-                  <input type="hidden" id="price" name="price" data-truePrice="{{ old('price', $product->price) }}"
-                    value="Rp.
-                {{ old('price', $product->price) }}" type="text" class="form-control" disabled>
+            
+                <!-- Price -->
+                <div class="col-md-4">
+                  @php
+                      $originalPrice = $cart->product->price;
+                      $discount = $cart->product->discount;
+                      $finalPrice = $discount == 0 
+                          ? $originalPrice 
+                          : ((100 - $discount) / 100) * $originalPrice;
+                  @endphp
+              
+                  @if ($discount == 0)
+                      <input type="hidden" name="price[]" value="{{ $originalPrice }}" class="price" />
+                      <span>Rp. {{ number_format($originalPrice, 0, ',', '.') }}</span>
                   @else
-                  <input type="hidden" id="price" name="price"
-                    data-truePrice="{{ old('price', ((100 - $product->discount)/100) * $product->price) }}"
-                    value="Rp. {{ old('price', ((100 - $product->discount)/100) *$product->price) }}" type="text"
-                    class="form-control" disabled>
+                      <input type="hidden" name="price[]" value="{{ $finalPrice }}" class="price" />
+                      <span>
+                          Rp. {{ number_format($finalPrice, 0, ',', '.') }}
+                          <span class="text-decoration-line-through text-muted ms-2">
+                              Rp. {{ number_format($originalPrice, 0, ',', '.') }}
+                          </span>
+                          <sup class="text-danger">{{ $discount }}% Off</sup>
+                      </span>
                   @endif
-                  <div class="input-group" style="display:unset;">
-                    <div class="input-group-prepend">
-                      @if ($product->discount == 0)
-                      <span class="input-group-text">
-                        {{ $product->price }}
-                      </span>
-                      @else
-                      <span class="input-group-text">Rp. {{ ((100 - $product->discount)/100) * $product->price }} <span
-                          class="strikethrough ms-4">
-                          {{ $product->price }}
-                        </span><sup><sub class="mx-1">of</sub>
-                          {{ $product->discount }}%
-                        </sup>
-                      </span>
-                      @endif
-                    </div>
-                  </div>
-                </div>
               </div>
+              
+            
+                <!-- Quantity -->
+                <div class="col-md-3">
+                    <input type="number" name="quantity[]" value="{{ $cart->quantity }}" 
+                           class="form-control quantity" readonly>
+                </div>
             </div>
-            <div class="form-group col-2">
-              <label for="quantity">Quantity</label>
-              <input id="quantity" name="quantity" data-productId="{{ $product->id }}"
-                value="{{ old('quantity', '0' ) }}" type="number" min="0"
-                class="form-control @error('quantity') is-invalid @enderror" onchange="myCounter()">
-            </div>
-            <div class="mb-3 col-12">
-              @error('quantity')
-              <div class="text-danger">{{ $message }}</div>
-              @enderror
-            </div>
+            @endforeach
+            
             <div class="row mb-3">
               <div class="col-12">Destination</div>
               <div class="form-group col-7">

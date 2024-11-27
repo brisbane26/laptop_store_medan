@@ -60,6 +60,13 @@
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dumpster"></i></div>
                 Product
             </a>
+            <!-- Menu Cart hanya untuk role_id 2 -->
+            @if (auth()->user()->role_id == 2)
+            <a class="nav-link" href="/cart">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-shopping-cart"></i></div>
+                Cart
+            </a>
+            @endif
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts"
               aria-expanded="false" aria-controls="collapseLayouts">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-columns"></i></div>
