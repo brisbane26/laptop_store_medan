@@ -4,7 +4,7 @@
 <div class="container">
     <h1 class="mt-4">Tambah Admin</h1>
 
-    <form action="{{ route('admin.create') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('admin.store') }}" method="POST" enctype="multipart/form-data">
 
         @if(session('success'))
     <div class="alert alert-success">
@@ -46,7 +46,7 @@
                 <!-- Tidak perlu lagi input Role -->
                 <div class="mb-3">
                     <label for="image" class="form-label">Profile Image</label>
-                    <input type="file" name="image" id="image" class="form-control" accept="image/*">
+                    <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
                     @error('image')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror

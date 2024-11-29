@@ -195,10 +195,14 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('users.destroy');
 });
 
-
-
     Route::get('/admin/tambah_admin', [AdminController::class, 'create'])->name('admin.create');
-    Route::post('/admin/tambah_admin', [AdminController::class, 'store'])->name('admin.store');  
+    Route::post('/admin/tambah_admin', [AdminController::class, 'store'])->name('admin.store');
     
-    Route::get('/product', [ProductController::class, 'index'])->name('products.index');
+    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('index'); // Menampilkan daftar admin
+    Route::get('/{id}/edit', [AdminController::class, 'edit'])->name('edit'); // Form edit admin
+    Route::post('/{id}', [AdminController::class, 'update'])->name('update'); // Proses update admin
+});
 
+
+    Route::get('/product', [ProductController::class, 'index'])->name('products.index');

@@ -1,28 +1,35 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
-    // Menampilkan form tambah admin
-    public function create()
-{
-    $title = 'Tambah Admin';
-    return view('admin.tambah_admin', compact('title'));
-}
-
-public function __construct()
+    public function __construct()
     {
-        View::share('title', 'Tambah Admin');  // Title ini akan berlaku untuk semua method di AdminController
+        View::share('title', 'Tambah Admin'); // Title default untuk semua method di AdminController
     }
-    // Menyimpan data admin baru
+
+    public function index()
+    {
+        $admins = User::where('role_id', Role::ADMIN_ID)->get();
+        return view('admin.list_admin', compact('admins'));
+    }
+
+    public function create()
+    {
+        $title = 'Tambah Admin';
+        return view('admin.tambah_admin', compact('title'));
+    }
+
     public function store(Request $request)
     {
-        // Validasi data
         $validatedData = $request->validate([
             'fullname' => 'required|string|max:255',
             'username' => 'required|string|unique:users',
@@ -36,21 +43,17 @@ public function __construct()
             'point' => 'required|integer',
         ]);
 
-        // Menyimpan file gambar jika ada
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('profile', 'public');
-        } else {
-            $imagePath = null; // Jika tidak ada gambar, simpan null
-        }
+        $imagePath = $request->hasFile('image') 
+            ? $request->file('image')->store('profile', 'public') 
+            : null;
 
-        // Menyimpan data user (admin)
-        $user = User::create([
+        User::create([
             'fullname' => $validatedData['fullname'],
             'username' => $validatedData['username'],
             'email' => $validatedData['email'],
             'password' => bcrypt($validatedData['password']),
-            'role_id' => Role::ADMIN_ID,  // Tetapkan role_id secara otomatis ke Admin (1)
-            'image' => $imagePath,  // Menyimpan path gambar jika ada
+            'role_id' => Role::ADMIN_ID,
+            'image' => $imagePath,
             'phone' => $validatedData['phone'],
             'gender' => $validatedData['gender'],
             'address' => $validatedData['address'],
@@ -58,7 +61,65 @@ public function __construct()
             'point' => $validatedData['point'],
         ]);
 
-        // Redirect atau pesan sukses
-        return redirect()->route('admin.create')->with('success', 'Admin added successfully');
+        return redirect()->route('admin.create')->with('success', 'Admin berhasil ditambahkan.');
     }
+
+    public function edit($id)
+    {
+        $admin = User::where('role_id', Role::ADMIN_ID)->findOrFail($id);
+        return view('admin.edit_admin', compact('admin'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        \Log::info("Update Method Called for Admin ID: $id", $request->all()); // Log semua data request
+    
+        $admin = User::where('role_id', Role::ADMIN_ID)->findOrFail($id);
+        \Log::info("Admin Found", $admin->toArray()); // Log data admin yang ditemukan
+    
+        $validatedData = $request->validate([
+            'fullname' => 'required|string|max:255',
+            'username' => 'required|string|unique:users,username,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
+            'phone' => 'required|string|max:15',
+            'gender' => 'required|string',
+            'address' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+    
+        \Log::info("Validated Data", $validatedData); // Log data yang telah divalidasi
+    
+        $admin->fill($validatedData);
+    
+        if ($request->filled('password')) {
+            $admin->password = bcrypt($request->password);
+            \Log::info("Password Updated");
+        }
+    
+        if ($request->hasFile('image')) {
+            if ($admin->image) {
+                Storage::disk('public')->delete($admin->image);
+                \Log::info("Old Image Deleted", ['path' => $admin->image]);
+            }
+    
+            $imagePath = $request->file('image')->store('profile', 'public');
+            $admin->image = $imagePath;
+            \Log::info("New Image Stored", ['path' => $imagePath]);
+        }
+    
+        if ($admin->isDirty()) {
+            try {
+                $admin->save();
+                \Log::info("Admin Updated Successfully", $admin->toArray());
+                return redirect()->route('admin.edit', $id)->with('success', 'Admin berhasil diperbarui.');
+            } catch (\Exception $e) {
+                \Log::error("Failed to Update Admin", ['error' => $e->getMessage()]);
+                return redirect()->route('admin.edit', $id)->with('error', 'Terjadi kesalahan saat memperbarui admin.');
+            }
+        } else {
+            \Log::warning("No Changes Detected for Admin ID: $id");
+            return redirect()->route('admin.edit', $id)->with('error', 'Tidak ada perubahan yang terdeteksi.');
+        }
+    }
+    
 }
