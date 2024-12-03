@@ -10,7 +10,7 @@ class UserController extends Controller
     // Menampilkan semua pengguna
     public function index()
     {
-        $users = User::with('role')->get();  // Ambil semua pengguna beserta role mereka
+        $users = DB::table('user_view')->get();  // Ambil semua pengguna beserta role mereka
         return view('users.index', compact('users')); // Ganti customers menjadi users
     }
     

@@ -28,7 +28,8 @@
                     <td>{{ $admin->email }}</td>
                     <td>{{ $admin->phone }}</td>
                     <td>
-                        <a href="{{ route('admin.edit', $admin->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <!-- Pastikan menggunakan admin_id sesuai view -->
+                        <a href="{{ route('admin.edit', $admin->admin_id) }}" class="btn btn-warning btn-sm">Edit</a>
                         <!-- Tambahkan tombol hapus jika diperlukan -->
                     </td>
                 </tr>
@@ -41,3 +42,4 @@
     </table>
 </div>
 @endsection
+
