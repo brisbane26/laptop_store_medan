@@ -16,9 +16,12 @@ class ProductController extends Controller
 
     // Filter produk berdasarkan input pencarian
     $search = $request->input('search');
-    $product = Product::when($search, function ($query, $search) {
+    $product = DB::table('product_view')
+    ->when($search, function ($query, $search) {
         return $query->where('product_name', 'like', '%' . $search . '%');
-    })->get();
+    })
+    ->get();
+
 
     return view('/product/index', compact("title", "product", "search"));
 }

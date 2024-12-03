@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -18,7 +19,13 @@ class AdminController extends Controller
 
     public function index()
     {
-        $admins = User::where('role_id', Role::ADMIN_ID)->get();
+        // Mengambil data dari view admin_view
+        $admins = DB::table('admin_view')->get();
+
+        // Debugging jika diperlukan
+        \Log::info('Admins: ', $admins->toArray());
+
+        // Mengirim data ke view
         return view('admin.list_admin', compact('admins'));
     }
 

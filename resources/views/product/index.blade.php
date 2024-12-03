@@ -70,21 +70,21 @@
                                     <p class="card-text">{{ $row->orientation }}</p>
 
                                     <!-- detail -->
-                                    <button data-id="{{ $row->id }}"
+                                    <button data-id="{{ $row->product_id }}"
                                       class="btn btn-primary btn-sm detail">Detail</button>
 
                                     <!-- ulasan -->
-                                    <a href="/review/product/{{ $row->id }}"><button
+                                    <a href="/review/product/{{ $row->product_id }}"><button
                                           class="btn btn-primary btn-sm ubah">Review</button></a>
 
                                     <!-- [admin] ubah -->
                                     @can('edit_product',App\Models\Product::class)
-                                    <a href="/product/edit_product/{{ $row->id }}"><button
+                                    <a href="/product/edit_product/{{ $row->product_id }}"><button
                                           class="btn btn-primary btn-sm ubah">Edit</button></a>
                                     @endcan
                                     @can('create_order', App\Models\Order::class)
                                     <button 
-                                        data-id="{{ $row->id }}" 
+                                        data-id="{{ $row->product_id }}" 
                                         class="btn btn-primary btn-sm add-to-cart">
                                         Add to Cart
                                     </button>
