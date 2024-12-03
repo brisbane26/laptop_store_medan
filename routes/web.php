@@ -122,6 +122,10 @@ Route::middleware(['auth'])->group(function () {
         Route::post("/point/convert_point", "convert_point")->can("convert_point", App\Models\User::class);
     });
 
+    Route::get('/contact', function () {
+        $title = "Contact Us"; // Atur nilai variabel title
+        return view('contact.index', compact('title')); // Kirim variabel ke view
+    });
 
     // chart
     Route::middleware(['auth'])->group(function () {
