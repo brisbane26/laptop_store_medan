@@ -132,7 +132,7 @@ function setCity() {
 }
 
 function setOngkir({
-    origin = 42, // Banyuwangi
+    origin = 278, // Kota Medan
     destination,
     quantity,
     courier = "jne",

@@ -11,6 +11,15 @@ use Mpdf\Mpdf;
 
 class OrderController extends Controller
 {
+    public function calculateTotalPrice($quantity, $price)
+    {
+        // Memanggil fungsi Total_Harga dari database
+        $result = DB::select("SELECT Total_Harga(?, ?) AS total_price", [$quantity, $price]);
+
+        // Mengembalikan hasil total harga
+        return $result[0]->total_price;
+    }
+
     public function makeOrderGet()
     {
         $userId = auth()->id();
@@ -21,7 +30,7 @@ class OrderController extends Controller
             'cartItems' => $cartItems, // Kirimkan semua item di keranjang
         ]);
     }
-    
+
     public function makeOrderPost(Request $request)
     {
         $rules = [
@@ -36,7 +45,7 @@ class OrderController extends Controller
             'quantity.*' => 'required|numeric|min:1',
             'price.*' => 'required|numeric|min:0',
         ];
-    
+
         $messages = [
             'product_id.*.required' => 'Product ID is required.',
             'quantity.*.min' => 'Quantity must be at least 1.',
@@ -44,26 +53,23 @@ class OrderController extends Controller
             'bank_id.required' => 'Please select a valid bank.',
             'bank_id.exists' => 'The selected bank is invalid.',
         ];
-    
-        // Validasi tambahan untuk bank_id jika metode pembayaran adalah transfer bank
+
         if ($request->payment_method == 1) {
             $rules['bank_id'] = 'required|numeric|exists:banks,id';
         }
-    
-        // Validasi input
+
         $validatedData = $request->validate($rules, $messages);
-    
-        // Pengecekan stok sebelum transaksi
+
         foreach ($validatedData['product_id'] as $index => $productId) {
             $product = Product::findOrFail($productId);
             if ($product->stock < $validatedData['quantity'][$index]) {
-                return back()->withErrors(['message' => "Stock for {$product->name} is insufficient."]);
+                return back()->withErrors([
+                    "quantity.{$index}" => "Quantity exceeds stock ({$product->stock}) for {$product->name}."
+                ])->withInput();
             }
         }
-    
-        // Transaksi database
+
         DB::transaction(function () use ($validatedData) {
-            // Buat data order
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'address' => $validatedData['address'],
@@ -71,14 +77,13 @@ class OrderController extends Controller
                 'total_price' => $validatedData['total_price'],
                 'payment_id' => $validatedData['payment_method'],
                 'note_id' => ($validatedData['payment_method'] == 1) ? 2 : 1,
-                'status_id' => 2, // Status awal
+                'status_id' => 2,
                 'transaction_doc' => ($validatedData['payment_method'] == 1) ? env('IMAGE_PROOF') : null,
                 'is_done' => 0,
                 'coupon_used' => $validatedData['coupon_used'],
                 'bank_id' => $validatedData['payment_method'] == 1 ? $validatedData['bank_id'] : null,
             ]);
-    
-            // Buat detail order untuk setiap produk
+
             foreach ($validatedData['product_id'] as $index => $productId) {
                 OrderDetail::create([
                     'order_id' => $order->id,
@@ -86,20 +91,15 @@ class OrderController extends Controller
                     'quantity' => $validatedData['quantity'][$index],
                     'price' => $validatedData['price'][$index],
                 ]);
-    
-                // Kurangi stok produk
+
                 Product::where('id', $productId)->decrement('stock', $validatedData['quantity'][$index]);
             }
-    
-            // Hapus item di cart setelah order berhasil
+
             Cart::where('user_id', auth()->id())->delete();
         });
-    
-        // Redirect ke halaman order data setelah berhasil
+
         return redirect('/order/order_data')->with('success', 'Order successfully created!');
     }
-    
-    
 
 
     public function orderData()
@@ -173,163 +173,124 @@ class OrderController extends Controller
     }
 
 
-    private function couponBack(Order $order)
-    {
-        // return the user's coupon if using a coupon
-        $user = Auth::user();
-
-        $new_coupon = (int)$user->coupon + (int)$order->coupon_used;
-
-        $user->coupon = $new_coupon;
-
-        if ($user->isDirty()) {
-            $user->save();
-        }
-    }
-
-
     public function rejectOrder(Request $request, Order $order)
-    {
-        if ($request->refusal_reason == "") {
-            $message = "Refusal reason cannot be empty!";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        if ($order->status_id == 4) {
-            $message = "Order status is already succeeded by admin";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        if ($order->status_id == 5) {
-            $message = "Order status is already canceled by user";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        if ($order->status_id == 3) {
-            $message = "Order status is already rejected";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        // Update status to rejected and return stock for all products in the order
-        foreach ($order->orderDetails as $orderDetail) {
-            $this->stockReturn($orderDetail->product, $orderDetail->quantity);
-        }
-    
-        $order->update([
-            "status_id" => 3,
-            "refusal_reason" => $request->refusal_reason,
+{
+    try {
+        DB::statement('CALL reject_order_procedure(?, ?, ?)', [
+            $order->id,
+            $request->refusal_reason,
+            Auth::id(),
         ]);
-    
-        $this->couponBack($order);
-    
+
         $message = "Order rejected successfully!";
         myFlasherBuilder(message: $message, success: true);
-        return redirect("/order/order_data");
+    } catch (\Exception $e) {
+        $message = $e->getMessage();
+        myFlasherBuilder(message: $message, failed: true);
     }
-    
 
-
-    private function stockReturn(Product $product, int $quantity)
-    {
-        $product->stock += $quantity;
-        $product->save();
-    }
-    
-
+    return redirect("/order/order_data");
+}
 
     public function approveOrder(Order $order)
-    {
-        if ($order->status_id == 1) {
-            $message = "Order status is already approved by admin";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        if ($order->status_id == 3) {
-            $message = "Can't approve the order that has been rejected before";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        if ($order->status_id == 5) {
-            $message = "Can't approve the order that has been canceled by user";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        if ($order->transaction_doc == env("IMAGE_PROOF")) {
-            $message = "No transfer proof uploaded!";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        $order->update([
-            "status_id" => 1,
-            "refusal_reason" => null,
-            "note_id" => ($order->payment_id == 1) ? 4 : 1,
+{
+    // Validasi: Check jika order sudah disetujui
+    if ($order->status_id == 1) {
+        $message = "Order status is already approved by admin";
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
+    }
+
+    // Validasi: Check jika order sudah ditolak
+    if ($order->status_id == 3) {
+        $message = "Can't approve the order that has been rejected before";
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
+    }
+
+    // Validasi: Check jika order sudah dibatalkan
+    if ($order->status_id == 5) {
+        $message = "Can't approve the order that has been canceled by user";
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
+    }
+
+    // Validasi: Check jika bukti transfer tidak ada
+    if ($order->transaction_doc == env("IMAGE_PROOF")) {
+        $message = "No transfer proof uploaded!";
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
+    }
+
+    // Tentukan nilai note_id berdasarkan payment_id
+    $note_id = ($order->payment_id == 1) ? 4 : 1;
+
+    try {
+        // Panggil stored procedure untuk memperbarui status order
+        DB::select('CALL approve_order_procedure(?, ?)', [
+            $order->id,
+            $note_id
         ]);
-    
+
         $message = "Order approved successfully!";
         myFlasherBuilder(message: $message, success: true);
         return redirect("/order/order_data");
+    } catch (\Exception $exception) {
+        $message = $exception->getMessage();
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
     }
+}
     
-    public function endOrder(Order $order)
-    {
-        if ($order->status->order_status == "done") {
-            $message = "The order has already succeeded by admin!";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        if ($order->status->order_status != "approve") {
-            $message = "Order has not been approved by the admin!";
-            myFlasherBuilder(message: $message, failed: true);
-            return redirect("/order/order_data");
-        }
-    
-        // Change order status to done
-        $order->update([
-            "status_id" => 4,
-            "note_id" => 5,
-            "is_done" => 1,
-            "refusal_reason" => null,
-        ]);
-    
-        // Add points for the user
-        $user = $order->user;
-        foreach ($order->orderDetails as $orderDetail) {
-            $product = $orderDetail->product;
-            $point_rules = [
-                "1" => 5,
-                "2" => 3,
-                "3" => 3,
-                "4" => 3,
-            ];
-            $points = $point_rules[$product->id] * $orderDetail->quantity;
-            $user->point += $points;
-        }
-        $user->save();
-    
-        // Add transactional data
-        $transactional_data = [
-            "category_id" => 1,
-            "description" => "Sales of products in order #{$order->id}",
-            "income" => $order->total_price,
-            "outcome" => null,
+public function endOrder(Order $order)
+{
+    // Validasi: Cek jika order sudah selesai
+    if ($order->status->order_status == "done") {
+        $message = "The order has already succeeded by admin!";
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
+    }
+
+    // Validasi: Cek jika order belum disetujui
+    if ($order->status->order_status != "approve") {
+        $message = "Order has not been approved by the admin!";
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
+    }
+
+    // Tambahkan poin untuk user
+    $user = $order->user;
+    foreach ($order->orderDetails as $orderDetail) {
+        $product = $orderDetail->product;
+        $point_rules = [
+            "1" => 5,
+            "2" => 3,
+            "3" => 3,
+            "4" => 3,
         ];
-        Transaction::create($transactional_data);
-    
+
+        // Periksa apakah produk ada dalam aturan poin
+        $points = $point_rules[$product->id] ?? 2; // Default poin adalah 2 jika tidak ditemukan
+        $user->point += $points * $orderDetail->quantity;
+    }
+    $user->save();
+
+    // Panggil stored procedure untuk update status dan tambah transaksi
+    try {
+        DB::select('CALL end_order_procedure(?, ?)', [
+            $order->id,
+            $order->total_price,
+        ]);
+
         $message = "Order has been ended by admin";
         myFlasherBuilder(message: $message, success: true);
         return redirect("/order/order_history");
+    } catch (\Exception $exception) {
+        $message = $exception->getMessage();
+        myFlasherBuilder(message: $message, failed: true);
+        return redirect("/order/order_data");
     }
-    
-
+}
 
 
     public function orderHistory()
@@ -554,5 +515,5 @@ class OrderController extends Controller
             return response()->json(['error' => 'Failed to generate PDF'], 500);
         }
     }
-
 }
+
