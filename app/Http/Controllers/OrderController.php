@@ -11,6 +11,15 @@ use Mpdf\Mpdf;
 
 class OrderController extends Controller
 {
+    public function calculateTotalPrice($quantity, $price)
+    {
+        // Memanggil fungsi Total_Harga dari database
+        $result = DB::select("SELECT Total_Harga(?, ?) AS total_price", [$quantity, $price]);
+
+        // Mengembalikan hasil total harga
+        return $result[0]->total_price;
+    }
+
     public function makeOrderGet()
     {
         $userId = auth()->id();
@@ -52,6 +61,14 @@ class OrderController extends Controller
     
         // Validasi input
         $validatedData = $request->validate($rules, $messages);
+
+        $totalPrice = 0;
+        foreach ($validatedData['quantity'] as $index => $quantity) {
+            $price = $validatedData['price'][$index];
+            // Menggunakan fungsi calculateTotalPrice untuk mendapatkan total harga
+            $totalPrice += $this->calculateTotalPrice($quantity, $price);
+        }
+
     
         // Pengecekan stok sebelum transaksi
         foreach ($validatedData['product_id'] as $index => $productId) {
@@ -62,20 +79,15 @@ class OrderController extends Controller
         }
     
         // Transaksi database
-        DB::transaction(function () use ($validatedData) {
+        DB::transaction(function () use ($validatedData, $totalPrice) {
             // Buat data order
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'address' => $validatedData['address'],
                 'shipping_address' => $validatedData['shipping_address'],
-                'total_price' => $validatedData['total_price'],
+                'total_price' => $totalPrice,  // Gunakan total harga yang dihitung
                 'payment_id' => $validatedData['payment_method'],
-                'note_id' => ($validatedData['payment_method'] == 1) ? 2 : 1,
-                'status_id' => 2, // Status awal
-                'transaction_doc' => ($validatedData['payment_method'] == 1) ? env('IMAGE_PROOF') : null,
-                'is_done' => 0,
-                'coupon_used' => $validatedData['coupon_used'],
-                'bank_id' => $validatedData['payment_method'] == 1 ? $validatedData['bank_id'] : null,
+                'status_id' => 2,
             ]);
     
             // Buat detail order untuk setiap produk
@@ -86,22 +98,19 @@ class OrderController extends Controller
                     'quantity' => $validatedData['quantity'][$index],
                     'price' => $validatedData['price'][$index],
                 ]);
-    
+
                 // Kurangi stok produk
                 Product::where('id', $productId)->decrement('stock', $validatedData['quantity'][$index]);
             }
-    
+
             // Hapus item di cart setelah order berhasil
             Cart::where('user_id', auth()->id())->delete();
         });
-    
+
         // Redirect ke halaman order data setelah berhasil
         return redirect('/order/order_data')->with('success', 'Order successfully created!');
     }
     
-    
-
-
     public function orderData()
     {
         $title = "Order Data";
