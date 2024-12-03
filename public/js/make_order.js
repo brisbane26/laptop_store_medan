@@ -48,7 +48,7 @@ function calculateSubtotal() {
 
 // Fungsi untuk memperbarui data pengiriman setelah lokasi berubah
 function updateShipping(destination) {
-    const origin = 42; // ID asal (contoh Banyuwangi)
+    const origin = 278; // ID asal (Kota Medan)
     const quantity = parseInt(document.querySelector(".quantity").value) || 1;
     const courier = "jne";
 

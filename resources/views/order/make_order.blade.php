@@ -74,11 +74,17 @@
               </div>
               
             
-                <!-- Quantity -->
-                <div class="col-md-3">
-                    <input type="number" name="quantity[]" value="{{ $cart->quantity }}" 
-                           class="form-control quantity" readonly>
-                </div>
+<!-- Quantity -->
+<div class="col-md-3">
+  <input type="number" name="quantity[]" 
+         value="{{ old("quantity.{$loop->index}", $cart->quantity) }}" 
+         class="form-control quantity" readonly>
+  @error("quantity.{$loop->index}")
+  <div class="text-danger" style="font-size: 12px;">
+      {{ $message }}
+  </div>
+  @enderror
+</div>
             </div>
             @endforeach
             
