@@ -11,6 +11,15 @@ use Mpdf\Mpdf;
 
 class OrderController extends Controller
 {
+    public function calculateTotalPrice($quantity, $price)
+    {
+        // Memanggil fungsi Total_Harga dari database
+        $result = DB::select("SELECT Total_Harga(?, ?) AS total_price", [$quantity, $price]);
+
+        // Mengembalikan hasil total harga
+        return $result[0]->total_price;
+    }
+
     public function makeOrderGet()
     {
         $userId = auth()->id();
@@ -21,86 +30,77 @@ class OrderController extends Controller
             'cartItems' => $cartItems, // Kirimkan semua item di keranjang
         ]);
     }
-    
+
     public function makeOrderPost(Request $request)
-{
-    $rules = [
-        'address' => 'required|max:255',
-        'payment_method' => 'required|numeric',
-        'province' => 'required|numeric|gt:0',
-        'city' => 'required|numeric|gt:0',
-        'total_price' => 'required|gt:0',
-        'shipping_address' => 'nullable|max:255',
-        'coupon_used' => 'required|gte:0',
-        'product_id.*' => 'required|exists:products,id',
-        'quantity.*' => 'required|numeric|min:1',
-        'price.*' => 'required|numeric|min:0',
-    ];
+    {
+        $rules = [
+            'address' => 'required|max:255',
+            'payment_method' => 'required|numeric',
+            'province' => 'required|numeric|gt:0',
+            'city' => 'required|numeric|gt:0',
+            'total_price' => 'required|gt:0',
+            'shipping_address' => 'nullable|max:255',
+            'coupon_used' => 'required|gte:0',
+            'product_id.*' => 'required|exists:products,id',
+            'quantity.*' => 'required|numeric|min:1',
+            'price.*' => 'required|numeric|min:0',
+        ];
 
-    $messages = [
-        'product_id.*.required' => 'Product ID is required.',
-        'quantity.*.min' => 'Quantity must be at least 1.',
-        'price.*.min' => 'Price must be at least 0.',
-        'bank_id.required' => 'Please select a valid bank.',
-        'bank_id.exists' => 'The selected bank is invalid.',
-    ];
+        $messages = [
+            'product_id.*.required' => 'Product ID is required.',
+            'quantity.*.min' => 'Quantity must be at least 1.',
+            'price.*.min' => 'Price must be at least 0.',
+            'bank_id.required' => 'Please select a valid bank.',
+            'bank_id.exists' => 'The selected bank is invalid.',
+        ];
 
-    // Validasi tambahan untuk bank_id jika metode pembayaran adalah transfer bank
-    if ($request->payment_method == 1) {
-        $rules['bank_id'] = 'required|numeric|exists:banks,id';
-    }
-
-    // Validasi input
-    $validatedData = $request->validate($rules, $messages);
-
-    // Pengecekan stok sebelum transaksi
-    foreach ($validatedData['product_id'] as $index => $productId) {
-        $product = Product::findOrFail($productId);
-        if ($product->stock < $validatedData['quantity'][$index]) {
-            // Kembalikan error jika stok tidak cukup
-            return back()->withErrors([
-                "quantity.{$index}" => "Quantity exceeds stock ({$product->stock}) for {$product->name}."
-            ])->withInput();
+        if ($request->payment_method == 1) {
+            $rules['bank_id'] = 'required|numeric|exists:banks,id';
         }
-    }
 
-    // Transaksi database
-    DB::transaction(function () use ($validatedData) {
-        // Buat data order
-        $order = Order::create([
-            'user_id' => auth()->id(),
-            'address' => $validatedData['address'],
-            'shipping_address' => $validatedData['shipping_address'],
-            'total_price' => $validatedData['total_price'],
-            'payment_id' => $validatedData['payment_method'],
-            'note_id' => ($validatedData['payment_method'] == 1) ? 2 : 1,
-            'status_id' => 2, // Status awal
-            'transaction_doc' => ($validatedData['payment_method'] == 1) ? env('IMAGE_PROOF') : null,
-            'is_done' => 0,
-            'coupon_used' => $validatedData['coupon_used'],
-            'bank_id' => $validatedData['payment_method'] == 1 ? $validatedData['bank_id'] : null,
-        ]);
+        $validatedData = $request->validate($rules, $messages);
 
-        // Buat detail order untuk setiap produk
         foreach ($validatedData['product_id'] as $index => $productId) {
-            OrderDetail::create([
-                'order_id' => $order->id,
-                'product_id' => $productId,
-                'quantity' => $validatedData['quantity'][$index],
-                'price' => $validatedData['price'][$index],
+            $product = Product::findOrFail($productId);
+            if ($product->stock < $validatedData['quantity'][$index]) {
+                return back()->withErrors([
+                    "quantity.{$index}" => "Quantity exceeds stock ({$product->stock}) for {$product->name}."
+                ])->withInput();
+            }
+        }
+
+        DB::transaction(function () use ($validatedData) {
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'address' => $validatedData['address'],
+                'shipping_address' => $validatedData['shipping_address'],
+                'total_price' => $validatedData['total_price'],
+                'payment_id' => $validatedData['payment_method'],
+                'note_id' => ($validatedData['payment_method'] == 1) ? 2 : 1,
+                'status_id' => 2,
+                'transaction_doc' => ($validatedData['payment_method'] == 1) ? env('IMAGE_PROOF') : null,
+                'is_done' => 0,
+                'coupon_used' => $validatedData['coupon_used'],
+                'bank_id' => $validatedData['payment_method'] == 1 ? $validatedData['bank_id'] : null,
             ]);
 
-            // Kurangi stok produk
-            Product::where('id', $productId)->decrement('stock', $validatedData['quantity'][$index]);
-        }
+            foreach ($validatedData['product_id'] as $index => $productId) {
+                OrderDetail::create([
+                    'order_id' => $order->id,
+                    'product_id' => $productId,
+                    'quantity' => $validatedData['quantity'][$index],
+                    'price' => $validatedData['price'][$index],
+                ]);
 
-        // Hapus item di cart setelah order berhasil
-        Cart::where('user_id', auth()->id())->delete();
-    });
+                Product::where('id', $productId)->decrement('stock', $validatedData['quantity'][$index]);
+            }
 
-    // Redirect ke halaman order data setelah berhasil
-    return redirect('/order/order_data')->with('success', 'Order successfully created!');
-}
+            Cart::where('user_id', auth()->id())->delete();
+        });
+
+        return redirect('/order/order_data')->with('success', 'Order successfully created!');
+    }
+
 
     public function orderData()
     {
@@ -515,5 +515,5 @@ public function endOrder(Order $order)
             return response()->json(['error' => 'Failed to generate PDF'], 500);
         }
     }
-
 }
+
