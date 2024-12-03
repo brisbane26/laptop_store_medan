@@ -106,7 +106,7 @@ class RajaOngkirController extends Controller
     // Fungsi untuk menghitung ongkos kirim
     public function cost($origin, $destination, $quantity, $courier)
     {
-        $weight = (int)$quantity * 300; // 300 gram/pieces for every product
+        $weight = (int)$quantity * 2000; // 2000 gram/pieces for every product
         $price = $this->_ongkir_post($origin, $destination, $weight, $courier);
         $data = json_decode($price, true);
 

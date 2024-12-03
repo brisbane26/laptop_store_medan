@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -41,6 +43,7 @@ class ProductController extends Controller
 
     public function addProductPost(Request $request)
     {
+        // Validasi input
         $validatedData = $request->validate([
             "product_name" => "required|max:25",
             "stock" => "required|numeric|gt:0",
@@ -48,24 +51,40 @@ class ProductController extends Controller
             "discount" => "required|numeric|gt:0|lt:100",
             "orientation" => "required",
             "description" => "required",
-            "image" => "image|max:2048"
+            "image" => "image|max:2048|mimes:jpeg,png,jpg", // Tipe file ditentukan
         ]);
 
+        // Default image handling
         if (!isset($validatedData["image"])) {
             $validatedData["image"] = env("IMAGE_PRODUCT");
         } else {
+            if (!$request->file("image")->isValid()) {
+                return back()->withErrors(['image' => 'Failed to upload image.']);
+            }
             $validatedData["image"] = $request->file("image")->store("product");
         }
 
         try {
-            Product::create($validatedData);
-            $message = "Product has been added!";
+            // Panggil stored procedure
+            DB::select('CALL add_product_procedure(?, ?, ?, ?, ?, ?, ?)', [
+                $validatedData['product_name'],
+                $validatedData['stock'],
+                $validatedData['price'],
+                $validatedData['discount'],
+                $validatedData['orientation'],
+                $validatedData['description'],
+                $validatedData['image'],
+            ]);
 
+            // Tampilkan pesan sukses
+            $message = "Product has been added!";
             myFlasherBuilder(message: $message, success: true);
 
             return redirect('/product');
         } catch (\Illuminate\Database\QueryException $exception) {
-            return abort(500);
+            // Tangani error database
+            \Log::error("Database error: " . $exception->getMessage());
+            return back()->withErrors(['error' => 'Failed to add product. Please try again later.']);
         }
     }
 
