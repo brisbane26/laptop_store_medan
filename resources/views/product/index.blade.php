@@ -58,7 +58,7 @@
                                     <p><img class=" img-fluid" src="{{ asset('storage/' . $row->image) }}"
                                           alt="Product Name"></p>
                                     <h4 class="card-title">{{ $row->product_name }}</h4>
-                                    <p class="card-text">{{ $row->orientation }}</p>
+                                    <p class="card-text">{{ $row->price }}</p>
                                     <div class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></div>
                                 </div>
                             </div>
@@ -67,8 +67,7 @@
                             <div class="card">
                                 <div class="card-body text-center mt-4">
                                     <h4 class="card-title">{{ $row->product_name }}</h4>
-                                    <p class="card-text">Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                                        Doloremque nam voluptas distinctio facere assumenda delectus.</p>
+                                    <p class="card-text">{{ $row->orientation }}</p>
 
                                     <!-- detail -->
                                     <button data-id="{{ $row->product_id }}"

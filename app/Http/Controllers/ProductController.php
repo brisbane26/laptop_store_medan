@@ -151,3 +151,13 @@ class ProductController extends Controller
         }
     }
 }
+
+class LandingController extends Controller
+{
+    public function index()
+    {
+        $product = app(ProductController::class)->getAllProducts(); // Memanggil method dari ProductController
+        return view('landing.index', compact('product'));
+    }
+}
+
