@@ -78,6 +78,10 @@
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-shopping-cart"></i></div>
                 Cart
             </a>
+            <a class="nav-link" href="/contact">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-phone"></i></div>
+                Contact Us
+            </a>
             @endif
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts"
               aria-expanded="false" aria-controls="collapseLayouts">
@@ -91,10 +95,6 @@
                     <a class="nav-link" href="/order/order_history">Order History</a>
                 </nav>
             </div>
-            <a class="nav-link" href="/contact">
-                <div class="sb-nav-link-icon"><i class="fa-solid fa-phone"></i></div>
-                Contact Us
-            </a>
         </div>
     </div>
     <div class="sb-sidenav-footer">
