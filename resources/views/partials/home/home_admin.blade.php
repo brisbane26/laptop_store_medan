@@ -1,7 +1,7 @@
 <div class="container-fluid px-4 pt-2">
-    <h1 class="mt-2">Dashboard Owner</h1>
+    <h1 class="mt-2">Dashboard Admin</h1>
     <ol class="breadcrumb mb-4">
-        <li class="breadcrumb-item active">Dashboard Owner</li>
+        <li class="breadcrumb-item active">Dashboard Admin</li>
     </ol>
 
     <div class="row">
