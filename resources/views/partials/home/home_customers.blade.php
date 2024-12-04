@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="col-md-6 order-md-2 mt-5 mt-lg-0 pt-5 pt-lg-0 d-none d-md-block hero-img" data-aos="fade-left">
-        <img src="{{ asset('storage/home/coffee.jpg') }}" class="img-fluid" alt="Coffee">
+        <img src="{{ asset('storage/home/laptops.webp') }}" class="img-fluid" alt="Coffee">
       </div>
     </div>
   </div>
@@ -28,7 +28,7 @@
 
         <div class="col-lg-5 col-md-6 d-none d-md-block">
           <div class="about-img" data-aos="fade-right" data-aos-delay="100">
-            <img src="{{ asset('storage/home/laracoffee.jpg') }}" alt="laptopstore">
+            <img src="{{ asset('storage/home/laptopstoremedan.jpg') }}" alt="laptopstore">
           </div>
         </div>
 
