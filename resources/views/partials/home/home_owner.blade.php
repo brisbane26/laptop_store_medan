@@ -40,7 +40,7 @@
             <div class="card bg-danger text-white mb-4">
                 <div class="card-body">Omset</div>
                 <div class="card-footer d-flex align-items-center justify-content-between">
-                    <span>{{ number_format(\App\Models\Order::sum('total_price'), 0, ',','.')}}</span>
+                    <span>{{ number_format(\App\Models\Order::where('is_done', 1)->sum('total_price'), 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>

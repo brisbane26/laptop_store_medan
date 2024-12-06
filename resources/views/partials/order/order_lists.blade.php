@@ -6,7 +6,7 @@
                 Order #{{ $order->id }} - {{ $order->created_at->format('d M Y') }}
                 <span class="badge bg-{{ $order->status->style }}">{{ $order->status->order_status }}</span>
             </h5>
-            @if (auth()->user()->role_id == 1) <!-- Admin Actions -->
+            @if (auth()->user()->role_id == 1 && $order->is_done != 1) <!-- Admin Actions -->
             <div class="d-flex">
                 <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#ModalRejectOrder" data-order-id="{{ $order->id }}">
                     Reject
@@ -21,6 +21,7 @@
                 </form>
             </div>
             @endif
+
         </div>
         <span class="badge bg-primary">{{ $order->payment->payment_method }}</span>
         <span class="order-detail-link" title="order detail" style="cursor: pointer;" 
