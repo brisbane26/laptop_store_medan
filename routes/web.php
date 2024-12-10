@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController};
+use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController, ServiceController};
 
 /*
 |--------------------------------------------------------------------------
@@ -32,8 +32,6 @@ Route::middleware(['alreadyLogin'])->group(function () {
     Route::get('/auth/register', [AuthController::class, "registrationGet"]);
     Route::post('/auth/register', [AuthController::class, "registrationPost"]);
 });
-
-
 
 // main
 Route::middleware(['auth'])->group(function () {
@@ -72,7 +70,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get("/order/data/{order}", "getOrderData")->can("my_real_order", "order");
         Route::get("/order/getProof/{order}", "getProofOrder")->can("my_real_order", "order");
 
-
         // customer only
         Route::get('/order/make_order', [OrderController::class, 'makeOrderGet'])->name('order.make_order')->middleware('auth');
         Route::post("/order/make_order", [OrderController::class, 'makeOrderPost'])->can("create_order", App\Models\Order::class)->name('order.make_order');
@@ -82,7 +79,6 @@ Route::middleware(['auth'])->group(function () {
         Route::post("/order/cancel_order/{order}", "cancelOrder")->can("cancel_order", "order");
         Route::post("/order/upload_proof/{order}", "uploadProof")->can("upload_proof", "order");
         Route::get('/order/invoice/{orderId}', [OrderController::class, 'downloadInvoice']);
-
 
         // admin only
         Route::post("/order/reject_order/{order}", "rejectOrder")->can("reject_order", App\Models\Order::class);
@@ -96,7 +92,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get("/shipping/city/{province_id}", "city");
         Route::get("/shipping/cost/{origin}/{destination}/{quantity}/{courier}", "cost");
     });
-
 
     // review
     Route::controller(ReviewController::class)->group(function () {
@@ -189,7 +184,6 @@ Route::controller(CartController::class)->middleware(['auth'])->group(function (
 
 });
 
-
     // Logout
     Route::post('/auth/logout', [AuthController::class, "logoutPost"]);
 });
@@ -208,5 +202,25 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/{id}', [AdminController::class, 'update'])->name('update'); // Proses update admin
 });
 
-
     Route::get('/product', [ProductController::class, 'index'])->name('products.index');
+    
+    Route::middleware(['auth'])->group(function () {
+        // Rute untuk customer
+        Route::get('service', [ServiceController::class, 'index'])->name('services.index');
+        Route::post('service', [ServiceController::class, 'store'])->name('services.store');
+        Route::get('/service/servis_data', [ServiceController::class, 'showData'])->name('service.servis_data');
+        Route::get('service/servis_history', [ServiceController::class, 'history'])->name('services.servis_history'); // Rute baru untuk history
+        Route::post('service/{service}/done', [ServiceController::class, 'setDone'])->name('services.setDone');
+    
+        // Rute untuk admin
+        Route::middleware('can:is_admin')->prefix('admin')->group(function () {
+            Route::get('/services', [ServiceController::class, 'adminIndex'])->name('admin.services.index');
+            Route::get('/service/servis_data', [ServiceController::class, 'showData'])->name('admin.servis_data');
+            Route::get('/service/servis_history', [ServiceController::class, 'history'])->name('admin.servis_history');
+            Route::post('/services/{service}/update-status', [ServiceController::class, 'updateStatus'])->name('services.updateStatus');
+            Route::post('/service/{service}/approve', [ServiceController::class, 'approve'])->name('admin.services.approve');
+        });
+    });
+    
+    
+    
