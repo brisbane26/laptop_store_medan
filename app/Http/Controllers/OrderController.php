@@ -262,15 +262,16 @@ public function endOrder(Order $order)
     $user = $order->user;
     foreach ($order->orderDetails as $orderDetail) {
         $product = $orderDetail->product;
-        $point_rules = [
-            "1" => 5,
-            "2" => 3,
-            "3" => 3,
-            "4" => 3,
+        
+        // Aturan poin berdasarkan kategori
+        $category_points = [
+            "new_laptop" => 12,
+            "second_laptop" => 9,
+            "others" => 3,
         ];
 
-        // Periksa apakah produk ada dalam aturan poin
-        $points = $point_rules[$product->id] ?? 2; // Default poin adalah 2 jika tidak ditemukan
+        // Periksa kategori produk dan ambil poin yang sesuai
+        $points = $category_points[$product->category] ?? 2; // Default poin adalah 2 jika kategori tidak ditemukan
         $user->point += $points * $orderDetail->quantity;
     }
     $user->save();
@@ -291,7 +292,6 @@ public function endOrder(Order $order)
         return redirect("/order/order_data");
     }
 }
-
 
     public function orderHistory()
     {

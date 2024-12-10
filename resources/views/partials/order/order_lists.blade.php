@@ -35,16 +35,34 @@
             @foreach ($order->orderDetails as $detail)
             <div class="row mb-2">
                 <div class="col-md-1">
-                    <img src="{{ asset('storage/' . $detail->product->image) }}" 
-                         class="media-object img-thumbnail" />
+                    <img src="{{ asset('storage/' . $detail->product->image) }}" class="media-object img-thumbnail" />
                 </div>
                 <div class="col-md-11">
                     <strong>{{ $detail->product->product_name }}</strong> <br />
                     Quantity: {{ $detail->quantity }} <br />
-                    Total price: Rp. {{ $detail->price * $detail->quantity }}
+                    Total price: Rp. {{ number_format($detail->price * $detail->quantity, 0, ',', '.') }} (please check the detail for the real total)<br />
+            
+                    <!-- Tambahkan Link Review Jika Produk Belum Direview -->
+                    @if (auth()->user()->role_id == 2 && $order->is_done == 1)
+                        @php
+                            $isReviewed = \App\Models\Review::where('user_id', auth()->id())
+                                ->where('product_id', $detail->product->id)
+                                ->exists();
+                        @endphp
+            
+                        @if (!$isReviewed)
+                            <a href="{{ url('/review/product/' . $detail->product->id) }}" class="link-info"
+                               style="text-decoration: none; font-size:0.9rem;">
+                                Review Now!
+                            </a>
+                        @else
+                            <span class="text-muted" style="font-size: 0.9rem;">Reviewed</span>
+                        @endif
+                    @endif
                 </div>
             </div>
             @endforeach
+            
         </div>
 
         <!-- Informasi Tambahan -->

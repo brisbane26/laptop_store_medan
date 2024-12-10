@@ -51,7 +51,7 @@
                 <!-- Price -->
                 <div class="col-md-4">
                   @php
-                      $originalPrice = $cart->product->price;
+                      $originalPrice = $cart->product->sell_price;
                       $discount = $cart->product->discount;
                       $finalPrice = $discount == 0 
                           ? $originalPrice 

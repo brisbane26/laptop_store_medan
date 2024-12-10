@@ -14,7 +14,6 @@
   @include('partials/breadcumb')
 
   <div class="row flex-lg-nowrap">
-
     <div class="col">
       <div class="row">
         <div class="col mb-3">
@@ -55,25 +54,55 @@
                           </div>
                           <div class="col-12 col-md-2 col-sm-4 mb-3">
                             <div class="form-group">
-                              <label for="price">Price</label>
-                              <input class="form-control @error('price') is-invalid @enderror" id="price" name="price"
-                                type="text" placeholder="Enter price product" value="{{ old('price') }}">
-                              @error('price')
+                              <label for="buy_price">Buy Price</label>
+                              <input class="form-control @error('buy_price') is-invalid @enderror" id="buy_price"
+                                name="buy_price" type="text" placeholder="Enter buy price"
+                                value="{{ old('buy_price') }}">
+                              @error('buy_price')
                               <div class="text-danger">{{ $message }}</div>
                               @enderror
                             </div>
                           </div>
                           <div class="col-12 col-md-2 col-sm-4 mb-3">
                             <div class="form-group">
-                              <label for="discount">Discount</label>
-                              <input class="form-control @error('discount') is-invalid @enderror" type="text"
-                                id="discount" name="discount" placeholder="Enter discount product"
-                                value="{{ old('discount') }}">
+                              <label for="sell_price">Sell Price</label>
+                              <input class="form-control @error('sell_price') is-invalid @enderror" id="sell_price"
+                                name="sell_price" type="text" placeholder="Enter sell price"
+                                value="{{ old('sell_price') }}">
+                              @error('sell_price')
+                              <div class="text-danger">{{ $message }}</div>
+                              @enderror
+                            </div>
+                          </div>
+                          <div class="col-12 col-md-2 col-sm-4 mb-3">
+                            <div class="form-group">
+                              <label for="category">Category</label>
+                              <select class="form-control @error('category') is-invalid @enderror" id="category"
+                                name="category">
+                                <option value="" disabled selected>Select category</option>
+                                <option value="new_laptop" {{ old('category') === 'new_laptop' ? 'selected' : '' }}>New
+                                  Laptop</option>
+                                <option value="second_laptop" {{ old('category') === 'second_laptop' ? 'selected' : '' }}>
+                                  Second Laptop</option>
+                                <option value="others" {{ old('category') === 'others' ? 'selected' : '' }}>Others
+                                </option>
+                              </select>
+                              @error('category')
+                              <div class="text-danger">{{ $message }}</div>
+                              @enderror
+                            </div>
+                          </div>
+                          <div class="col-12 col-md-2 col-sm-4 mb-3">
+                            <div class="form-group">
+                              <label for="discount">Discount (%)</label>
+                              <input class="form-control @error('discount') is-invalid @enderror" type="text" id="discount"
+                                name="discount" placeholder="Enter discount percentage" value="{{ old('discount') }}">
                               @error('discount')
                               <div class="text-danger">{{ $message }}</div>
                               @enderror
                             </div>
                           </div>
+                          
                           <div class="col-lg-12 mb-3">
                             <div class="form-group">
                               <label for="orientation">Product Orientation</label>

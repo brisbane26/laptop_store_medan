@@ -97,15 +97,15 @@
   <div class="input-group">
       @if ($detail->product->discount == 0)
       <span class="form-control text-center" 
-            data-price="{{ $detail->product->price }}">
-          Rp. {{ number_format($detail->product->price, 0, ',', '.') }}
+            data-price="{{ $detail->product->sell_price }}">
+          Rp. {{ number_format($detail->product->sell_price, 0, ',', '.') }}
       </span>
       @else
       <span class="form-control text-center" 
-            data-price="{{ ((100 - $detail->product->discount) / 100) * $detail->product->price }}">
-          Rp. {{ number_format(((100 - $detail->product->discount) / 100) * $detail->product->price, 0, ',', '.') }} 
+            data-price="{{ ((100 - $detail->product->discount) / 100) * $detail->product->sell_price }}">
+          Rp. {{ number_format(((100 - $detail->product->discount) / 100) * $detail->product->sell_price, 0, ',', '.') }} 
           <span class="text-decoration-line-through ms-2">
-              Rp. {{ number_format($detail->product->price, 0, ',', '.') }}
+              Rp. {{ number_format($detail->product->sell_price, 0, ',', '.') }}
           </span>
           <sup class="ms-1">{{ $detail->product->discount }}% off</sup>
       </span>
@@ -119,7 +119,7 @@
                                   type="number" min="0" 
                                   id="quantity_{{ $detail->id }}" 
                                   name="quantity_{{ $detail->id }}"
-                                  data-price="{{ $detail->product->price }}"  
+                                  data-price="{{ $detail->product->sell_price }}"  
                                   data-productId="{{ $detail->product_id }}" 
                                   placeholder="Qty" 
                                   value="{{ old('quantity', $detail->quantity) }}" 
@@ -261,7 +261,8 @@
                   <label for="use_coupon">Use</label>
                 </span>
                 <span>
-                  <input id="use_coupon" type="checkbox" onchange="changeKuponStatus()">
+                  <input type="checkbox" id="useCoupon" onchange="changeStatesCoupon(); updateOrderSummary();">
+                  <label for="useCoupon"></label>                  
                 </span>
                 @endif
               </span><span><span></span><span id="coupon" data-valueKupon="{{ auth()->user()->coupon }}">

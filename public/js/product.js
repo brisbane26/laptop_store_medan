@@ -1,5 +1,10 @@
 import { previewImage } from "/js/image_preview.js";
 
+// Fungsi untuk memformat angka dengan titik setiap 3 angka
+const formatCurrency = (number) => {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+};
+
 // Fungsi untuk mengatur visibility elemen
 const setVisible = (elementOrSelector, visible) =>
     ((typeof elementOrSelector === "string"
@@ -27,7 +32,7 @@ $("button.detail").click(function () {
 
             if (res.discount === 0) {
                 $(".price").html(
-                    `Price: <strong>Rp. ${res.price}</strong>`
+                    `Price: <strong>Rp. ${formatCurrency(res.sell_price)}</strong>`
                 );
                 $(".discount").html(
                     "Discount: <em class='text-danger'>No discount available</em>"
@@ -35,8 +40,8 @@ $("button.detail").click(function () {
             } else {
                 $(".price").html(
                     `Price: 
-                    <strong class='me-2'>Rp. ${(100 - res.discount) / 100 * res.price}</strong>
-                    <strong class='strikethrough'>Rp. ${res.price}</strong>`
+                    <strong class='me-2'>Rp. ${formatCurrency(((100 - res.discount) / 100) * res.sell_price)}</strong>
+                    <strong class='strikethrough'>Rp. ${formatCurrency(res.sell_price)}</strong>`
                 );
                 $(".discount").html(
                     `Discount: <em class='text-danger'>${res.discount}%</em>`

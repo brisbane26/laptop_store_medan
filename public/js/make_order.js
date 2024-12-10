@@ -25,8 +25,8 @@ function calculateSubtotal() {
     const couponUsedInput = document.getElementById("coupon_used");
     const couponUsed = parseInt(couponUsedInput.value) || 0;
 
-    // Setiap kupon bernilai 10.000, jadi diskon adalah 10.000 * couponUsed
-    couponDiscount = couponUsed * 50000;
+    // Setiap kupon bernilai 200.000, jadi diskon adalah 200.000 * couponUsed
+    couponDiscount = couponUsed * 200000;
 
     // Hitung total
     const total = Math.max(0, subtotal + shipping - couponDiscount);
