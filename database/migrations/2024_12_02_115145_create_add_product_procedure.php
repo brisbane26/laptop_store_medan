@@ -11,19 +11,21 @@ return new class extends Migration
         $sql = "
         DROP PROCEDURE IF EXISTS add_product_procedure;
 
-        CREATE PROCEDURE add_product_procedure(
-            IN product_name VARCHAR(255),
-            IN stock INT,
-            IN price DECIMAL(10,2),
-            IN discount DECIMAL(5,2),
-            IN orientation TEXT,
-            IN description TEXT,
-            IN image VARCHAR(255)
-        )
-        BEGIN
-            INSERT INTO products (product_name, stock, price, discount, orientation, description, image, created_at, updated_at)
-            VALUES (product_name, stock, price, discount, orientation, description, image, NOW(), NOW());
-        END;
+CREATE PROCEDURE add_product_procedure(
+    IN product_name VARCHAR(255),
+    IN category ENUM('new_laptop', 'second_laptop', 'others'),
+    IN orientation TEXT,
+    IN description TEXT,
+    IN buy_price INT,
+    IN sell_price INT,
+    IN stock INT,
+    IN discount INT,
+    IN image VARCHAR(255)
+)
+BEGIN
+    INSERT INTO products (product_name, category, orientation, description, buy_price, sell_price, stock, discount, image, created_at, updated_at)
+    VALUES (product_name, category, orientation, description, buy_price, sell_price, stock, discount, image, NOW(), NOW());
+END;
         ";
 
         DB::unprepared($sql);

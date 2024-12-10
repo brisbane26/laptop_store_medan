@@ -1,5 +1,13 @@
 import { previewImage } from "./image_preview.js";
 
+function formatRupiah(number) {
+    return new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 0,
+    }).format(number);
+}
+
 // modal order detail
 // modal order detail
 $("span.order-detail-link[title='order detail']").click(function (event) {
@@ -35,8 +43,8 @@ $("span.order-detail-link[title='order detail']").click(function (event) {
                     response.bank?.account_number || "-"
                 );
                 $("#total_price_detail").html(
-                    response.total_price ? `Rp${response.total_price}` : "-"
-                );
+                    response.total_price ? formatRupiah(response.total_price) : "-"
+                );                
                 $("#status_detail").html(
                     response.status?.order_status || "-"
                 );

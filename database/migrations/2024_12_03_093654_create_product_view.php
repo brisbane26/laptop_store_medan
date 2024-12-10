@@ -16,8 +16,14 @@ return new class extends Migration
             SELECT
                 id AS product_id,
                 product_name,
+                CASE
+                    WHEN category = 'new_laptop' THEN 'New Laptop'
+                    WHEN category = 'second_laptop' THEN 'Second Laptop'
+                    WHEN category = 'others' THEN 'Others'
+                    ELSE 'Unknown'
+                END AS category,
                 stock,
-                price,
+                sell_price,
                 discount,
                 image,
                 orientation,
@@ -26,7 +32,7 @@ return new class extends Migration
         
         // Jalankan query untuk membuat view
         DB::statement($sql);
-    }
+    }    
 
     /**
      * Reverse the migrations.

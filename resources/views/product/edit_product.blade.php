@@ -79,6 +79,47 @@
                               @enderror
                             </div>
                           </div>
+                          <div class="row">
+                            <div class="col-12 col-sm-4 mb-3">
+                                <div class="form-group">
+                                    <label for="category">Category</label>
+                                    <select class="form-control @error('category') is-invalid @enderror" id="category" name="category">
+                                        <option value="new_laptop" {{ old('category', $product->category) == 'new_laptop' ? 'selected' : '' }}>
+                                            New Laptop</option>
+                                        <option value="second_laptop" {{ old('category', $product->category) == 'second_laptop' ? 'selected' : '' }}>
+                                            Second Laptop</option>
+                                        <option value="others" {{ old('category', $product->category) == 'others' ? 'selected' : '' }}>Others
+                                        </option>
+                                    </select>
+                                    @error('category')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4 mb-3">
+                                <div class="form-group">
+                                    <label for="buy_price">Buy Price</label>
+                                    <input class="form-control @error('buy_price') is-invalid @enderror" type="number" id="buy_price"
+                                        name="buy_price" placeholder="Enter buy price"
+                                        value="{{ old('buy_price', $product->buy_price) }}">
+                                    @error('buy_price')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-4 mb-3">
+                                <div class="form-group">
+                                    <label for="sell_price">Sell Price</label>
+                                    <input class="form-control @error('sell_price') is-invalid @enderror" type="number" id="sell_price"
+                                        name="sell_price" placeholder="Enter sell price"
+                                        value="{{ old('sell_price', $product->sell_price) }}">
+                                    @error('sell_price')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        
                           <div class="col-12 col-sm-2 mb-3">
                             <div class="form-group">
                               <label for="stock">Stock</label>
@@ -86,17 +127,6 @@
                                 id="stock" name="stock" placeholder="Enter available stock" value="{{ old('stock',
                                 $product->stock) }}">
                               @error('stock')
-                              <div class="text-danger">{{ $message }}</div>
-                              @enderror
-                            </div>
-                          </div>
-                          <div class="col-12 col-sm-2 mb-3">
-                            <div class="form-group">
-                              <label for="price">Price</label>
-                              <input class="form-control @error('price') is-invalid @enderror" id="price" name="price"
-                                type="text" placeholder="Enter product price" value="{{ old('price', $product->price)
-                              }}">
-                              @error('price')
                               <div class="text-danger">{{ $message }}</div>
                               @enderror
                             </div>

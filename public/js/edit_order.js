@@ -39,8 +39,11 @@ $(document).ready(function () {
 });
 
 function changeStatesCoupon() {
-    isUseCoupon = !isUseCoupon;
+    const couponCheckbox = document.querySelector("#useCoupon");
+    isUseCoupon = couponCheckbox.checked; // True jika dicentang
+    couponUsed = isUseCoupon ? 1 : 0; // Misal, 1 kupon langsung digunakan
 }
+
 
 // ================== Order Summary ====================
 var sub_total;
@@ -65,8 +68,9 @@ function updateOrderSummary() {
 
     // Apply coupon logic
     if (isUseCoupon && couponUsed > 0) {
-        sub_total -= couponUsed * prices[0];
-    }
+        const couponDiscount = 200000; // Nilai diskon per kupon
+        sub_total -= couponUsed * couponDiscount;
+    }    
 
     total = sub_total + shipping; // Keep shipping cost in the total calculation
 
@@ -75,13 +79,21 @@ function updateOrderSummary() {
 
 
 function refresh_data({ sub_total = 0, shipping = 0, total = 0 }) {
-    $("#sub-total").html(sub_total);
+    const formatCurrency = (value) => {
+        return value.toLocaleString("id-ID", {
+            style: "decimal",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        });
+    };
+
+    $("#sub-total").html(formatCurrency(sub_total));
     $("#total_price").val(total);
-    $("#total").html(total);
+    $("#total").html(formatCurrency(total));
 
     if (shipping >= 0) {
         $("#shipping").attr("data-shippingCost", shipping);
-        $("#shipping").html(shipping);
+        $("#shipping").html(formatCurrency(shipping));
     }
 }
 

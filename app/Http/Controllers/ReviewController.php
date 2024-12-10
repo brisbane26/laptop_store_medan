@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use App\Models\{User, Product, Review};
 
@@ -28,13 +28,12 @@ class ReviewController extends Controller
         $sum = 0;
         for ($i = 1; $i <= 5; $i++) {
             $total = count(Review::where(["rating" => $i, "product_id" => $product->id])->get());
-            array_push($starCounter,  $total);
+            array_push($starCounter, $total);
             $sum += $total;
         }
 
         return view("/review/product_review", compact("title", "reviews", "product", "rate", "isPurchased", "isReviewed", "starCounter", "sum"));
     }
-
 
     public function addReview(Request $request)
     {
@@ -55,12 +54,10 @@ class ReviewController extends Controller
         return back();
     }
 
-
     public function getDataReview(Review $review)
     {
         return $review;
     }
-
 
     public function editReview(Request $request, Review $review)
     {
@@ -85,7 +82,6 @@ class ReviewController extends Controller
         }
     }
 
-
     public function deleteReview(Review $review)
     {
         $review->delete();
@@ -98,7 +94,9 @@ class ReviewController extends Controller
 
     private function isPurchased($user, $product)
     {
-        $orders = Order::where(["user_id" => $user->id, "product_id" => $product->id, "is_done" => 1])->get();
+        $orders = OrderDetail::whereHas('order', function ($query) use ($user) {
+            $query->where('user_id', $user->id)->where('is_done', 1);
+        })->where('product_id', $product->id)->get();
 
         if (count($orders) > 0) {
             return 1;
@@ -106,7 +104,6 @@ class ReviewController extends Controller
 
         return 0;
     }
-
 
     private function isReviewed($user, $product)
     {

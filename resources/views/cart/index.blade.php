@@ -42,7 +42,7 @@
                     </td>
                     <td>
                         @php
-                            $originalPrice = $item->product->price;
+                            $originalPrice = $item->product->sell_price;
                             $discount = $item->product->discount;
                             $finalPrice = $discount == 0 
                                 ? $originalPrice 

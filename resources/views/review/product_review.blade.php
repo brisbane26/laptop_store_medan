@@ -65,17 +65,21 @@
             <div class="graph-star-rating-header">
               <div class="ratings">
                 <?php
-                $rating_sum = round($rate, 2);
+                $rating_sum = round($rate, 2); // 2 desimal
                 for ($i = 1; $i <= 5; $i++) {
-                  if ($i < $rating_sum) {
-                    echo '<i class="fa fa-star rating-color"></i>';
-                  } else if ($i - 1 < $rating_sum && $rating_sum < $i) {
-                    echo '<i class="fa fa-star-half-stroke rating-color"></i>';
-                  } else {
-                    echo '<i class="fa fa-star"></i>';
-                  }
+                    if ($i <= floor($rating_sum)) {
+                        // Bintang penuh
+                        echo '<i class="fa fa-star rating-color"></i>';
+                    } elseif ($i - 0.5 <= $rating_sum) {
+                        // Bintang setengah
+                        echo '<i class="fa fa-star-half-stroke rating-color"></i>';
+                    } else {
+                        // Bintang kosong
+                        echo '<i class="fa fa-star"></i>';
+                    }
                 }
                 ?>
+                
               </div>
               <p class="text-black mb-4 mt-2">Rated
                 {{ round($rate, 2) }} out of 5
