@@ -3,7 +3,6 @@
         <div class="nav">
             @can("is_admin")
             <!-- Sidebar untuk Admin -->
-            <div class="sb-sidenav-menu-heading">Administrator</div>
             <a class="nav-link" href="/home">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-tachometer-alt"></i></div>
                 Dashboard
@@ -32,7 +31,6 @@
 
             @can("is_owner")
             <!-- Sidebar untuk Owner -->
-            <div class="sb-sidenav-menu-heading">Owner</div>
             <a class="nav-link" href="/home">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-tachometer-alt"></i></div>
                 Dashboard
@@ -73,7 +71,6 @@
             @cannot("is_admin")
             @cannot("is_owner")
             <!-- Sidebar untuk Customer -->
-            <div class="sb-sidenav-menu-heading">Customer</div>
             <a class="nav-link" href="/home">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-home-alt"></i></i></div>
                 Home
@@ -99,7 +96,6 @@
             @endcannot
 
             <!-- Bagian Interface untuk semua role -->
-            <div class="sb-sidenav-menu-heading">Interface</div>
             <a class="nav-link" href="/product">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dumpster"></i></div>
                 Product
