@@ -4,83 +4,38 @@ Chart.defaults.global.defaultFontColor = "#292b2c";
 
 $(window).on("load", function () {
     $.ajax({
-        url: "/chart/profits_chart", // Endpoint API
-        method: "get",
+        url: "/api/profits-chart", // Endpoint API
+        method: "GET",
         dataType: "json",
         success: function (response) {
-            console.log("API Response:", response); // Debugging log
+            console.log("API Response:", response);
 
-            // Validasi respons API
+            // Validasi data respons
             if (!response || !response.data || !response.six_month_ago || !response.now) {
                 console.error("Invalid API Response");
                 alert("Data profits tidak tersedia.");
                 return;
             }
 
-            // Parsing tanggal awal dan akhir
-            let begin = new Date(response["six_month_ago"]);
-            let end = new Date(response["now"]);
-            if (isNaN(begin) || isNaN(end)) {
-                console.error("Invalid Date Format");
-                alert("Tanggal dalam data API tidak valid.");
-                return;
-            }
+            const months = response.data.map(item => {
+                const date = new Date(item.date);
+                return date.toLocaleString("default", { month: "short", year: "numeric" }); // Format bulan singkat
+            });            
 
-            let month_list = [];
-            let montly_profit = [];
-            let month_iterate = new Date(begin);
+            const profits = response.data.map(item => item.profits ?? 0);
 
-            // Iterasi bulan dari awal hingga akhir
-            while (month_iterate <= end) {
-                let is_get = false;
-                let current_month = month_iterate.getMonth();
-                let current_year = month_iterate.getFullYear();
-
-                // Mencari data profit untuk bulan tertentu
-                for (let i = 0; i < response["data"].length; i++) {
-                    let data_date = new Date(response["data"][i]["date"]);
-                    if (
-                        data_date.getMonth() === current_month &&
-                        data_date.getFullYear() === current_year
-                    ) {
-                        montly_profit.push(
-                            parseInt(response["data"][i]["profits"]) || 0
-                        );
-                        is_get = true;
-                        break;
-                    }
-                }
-
-                // Jika tidak ada data untuk bulan tersebut, tambahkan 0
-                if (!is_get) {
-                    montly_profit.push(0);
-                }
-
-                // Tambahkan nama bulan ke daftar
-                let month_name = month_iterate.toLocaleString("default", {
-                    month: "long",
-                });
-                month_list.push(`${month_name}`);
-
-                // Iterasi ke bulan berikutnya
-                month_iterate.setMonth(month_iterate.getMonth() + 1);
-            }
-
-            // Cek apakah ada data profit valid
-            
-
-            // Inisialisasi grafik
-            let ctx = document.getElementById("profits_chart");
+            // Inisialisasi Chart
+            const ctx = document.getElementById("profits_chart");
             new Chart(ctx, {
                 type: "bar",
                 data: {
-                    labels: month_list,
+                    labels: months,
                     datasets: [
                         {
                             label: "Profit",
                             backgroundColor: "rgba(2,117,216,1)",
                             borderColor: "rgba(2,117,216,1)",
-                            data: montly_profit,
+                            data: profits,
                         },
                     ],
                 },
@@ -102,10 +57,8 @@ $(window).on("load", function () {
                         yAxes: [
                             {
                                 ticks: {
-                                    min: Math.min(...montly_profit) < 0
-                                        ? Math.min(...montly_profit) * 1.3
-                                        : 0,
-                                    max: Math.max(...montly_profit) * 1.3 || 10,
+                                    min: Math.min(...profits) < 0 ? Math.min(...profits) * 1.3 : 0,
+                                    max: Math.max(...profits) * 1.3 || 10,
                                     maxTicksLimit: 8,
                                 },
                                 gridLines: {
