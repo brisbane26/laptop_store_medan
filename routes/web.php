@@ -122,57 +122,77 @@ Route::middleware(['auth'])->group(function () {
         return view('contact.index', compact('title')); // Kirim variabel ke view
     });
 
-    // chart
-    Route::middleware(['auth'])->group(function () {
-        // sales chart
-        Route::get("/chart/sales_chart", function () {
-            $oneWeekAgo = DB::select(DB::raw('SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 DAY), "%Y-%m-%d") AS date'))[0]->date;
+// chart
+Route::middleware(['auth'])->group(function () {
+    // sales chart
+    Route::get("/chart/sales_chart", function () {
+        $oneWeekAgo = DB::select(DB::raw('SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 6 DAY), "%Y-%m-%d") AS date'))[0]->date;
+        $now = date('Y-m-d', time());
 
-            $now = date('Y-m-d', time());
+        $array_result = [
+            "one_week_ago" => $oneWeekAgo,
+            "now" => $now,
+        ];
 
-            $array_result = [
-                "one_week_ago" => $oneWeekAgo,
-                "now" => $now,
-            ];
+        // Disable ONLY_FULL_GROUP_BY
+        DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
 
-            //disable ONLY_FULL_GROUP_BY
-            DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
-            $array_result["data"] = DB::table("orders")
-                ->selectSub("count(*)", "sales_total")
-                ->selectSub("DATE_FORMAT(orders.updated_at, '%d')", "day")
-                ->selectSub("DATE_FORMAT(orders.updated_at, '%Y-%m-%d')", "date")
-                ->where("is_done", 1)
-                ->whereBetween(DB::raw("DATE_FORMAT(orders.updated_at, '%Y-%m-%d')"), ["$oneWeekAgo", $now])
-                ->groupByRaw("DATE_FORMAT(orders.updated_at, '%Y-%m-%d')")
-                ->get();
-            //re-enable ONLY_FULL_GROUP_BY
-            DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
+        $array_result["data"] = DB::table("orders")
+            ->join('order_details', 'orders.id', '=', 'order_details.order_id') // Relasi ke order_details
+            ->selectRaw("SUM(order_details.quantity) as sales_total") // Hitung total kuantitas
+            ->selectRaw("DATE_FORMAT(orders.updated_at, '%d') as day") // Tanggal (hari)
+            ->selectRaw("DATE_FORMAT(orders.updated_at, '%Y-%m-%d') as date") // Tanggal penuh
+            ->where("is_done", 1) // Filter hanya yang selesai
+            ->whereBetween(DB::raw("DATE_FORMAT(orders.updated_at, '%Y-%m-%d')"), ["$oneWeekAgo", $now]) // Rentang tanggal
+            ->groupByRaw("DATE_FORMAT(orders.updated_at, '%Y-%m-%d')") // Grup berdasarkan hari
+            ->get();
 
-            echo json_encode($array_result);
-        });
-        // profits chart
-        Route::get("/chart/profits_chart", function () {
-            $six_month_ago = DB::select(DB::raw('SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 5 MONTH), "%Y-%m") AS month'))[0]->month;
-            $now = date('Y-m', time());
-            $array_result = [
-                "six_month_ago" => $six_month_ago,
-                "now" => $now,
-            ];
+        // Re-enable ONLY_FULL_GROUP_BY
+        DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
 
-            //disable ONLY_FULL_GROUP_BY
-            DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
-            $array_result["data"] = DB::table("transactions")
-                ->selectSub("SUM(income) - SUM(outcome)", "profits")
-                ->selectSub("DATE_FORMAT(transactions.created_at, '%Y-%m')", "date")
-                ->whereBetween(DB::raw("DATE_FORMAT(transactions.created_at, '%Y-%m')"), ["$six_month_ago", $now])
-                ->groupByRaw("DATE_FORMAT(transactions.created_at, '%Y-%m')")
-                ->get();
-            //re-enable ONLY_FULL_GROUP_BY
-            DB::statement("SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'));");
+        // Log hasil query untuk debugging
+        Log::info("Sales Chart Data", ['data' => $array_result]);
 
-            echo json_encode($array_result);
-        });
+        echo json_encode($array_result);
     });
+
+    // profits chart
+
+Route::get('/api/profits-chart', function () {
+    $months = collect(range(0, 5))->map(function ($i) {
+        return now()->subMonths(5 - $i)->format('Y-m');
+    });
+
+    $profits = $months->map(function ($month) {
+        $total_income = DB::table('transactions')
+            ->whereRaw("DATE_FORMAT(created_at, '%Y-%m') = ?", [$month])
+            ->sum('income');
+
+        $total_outcome = DB::table('transactions')
+            ->whereRaw("DATE_FORMAT(created_at, '%Y-%m') = ?", [$month])
+            ->sum('outcome');
+
+        return $total_income - $total_outcome;
+    });
+
+    $array_result = [
+        'six_month_ago' => $months->first(),
+        'now' => $months->last(),
+        'data' => collect($profits)->map(function ($profit, $index) use ($months) {
+            return [
+                'date' => $months[$index],
+                'profits' => $profit,
+            ];
+        })->toArray(),
+    ];
+
+    Log::info('Profits Chart Data', ['data' => $array_result]);
+
+    return response()->json($array_result);
+});
+   
+});
+
 
 // Cart
 Route::controller(CartController::class)->middleware(['auth'])->group(function () {
