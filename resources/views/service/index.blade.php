@@ -12,8 +12,10 @@
 <div class="container-fluid px-3">
     <!-- flasher -->
     @if(session()->has('message'))
-    {!! session("message") !!}
-    @endif
+    <script>
+        window.serviceMessage = @json(session('message'));
+    </script>
+    @endif    
 
     <div id="wrapper">
         <div id="content-wrapper" class="d-flex flex-column">

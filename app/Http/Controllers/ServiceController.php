@@ -57,24 +57,35 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         // Validasi input
-        $validatedData=$request->validate([
-            'laptop_model' => 'required|string|max:255', // Pastikan laptop_model ada
-            'problem_description' => 'required|string', // Pastikan problem_description ada
+        $validatedData = $request->validate([
+            'laptop_model' => 'required|string|max:255',
+            'problem_description' => 'required|string',
         ]);
     
         // Cek apakah pengguna sudah login
         if (auth()->check()) {
-            // Menyimpan data service request
-            Service::create([
-                'user_id' => auth()->id(),
-                'laptop_model' => $validatedData['laptop_model'],
-                'problem_description' =>$validatedData['problem_description'],
-            ]);
+            try {
+                // Menyimpan data service request
+                Service::create([
+                    'user_id' => auth()->id(),
+                    'laptop_model' => $validatedData['laptop_model'],
+                    'problem_description' => $validatedData['problem_description'],
+                ]);
     
-            // Redirect kembali dengan pesan sukses
-            return redirect()->route('services.index')->with('success', 'Service request created successfully.');
-        } 
+                // Redirect kembali dengan pesan sukses
+                return redirect()->route('services.index')->with('message', [
+                    'type' => 'success',
+                    'text' => 'Service request created successfully.',
+                ]);
+            } catch (\Exception $e) {
+                return redirect()->route('services.index')->with('message', [
+                    'type' => 'error',
+                    'text' => 'Failed to create service request.',
+                ]);
+            }
+        }
     }
+    
     
     // Menyetujui request service
     public function approve(Request $request, Service $service)
