@@ -242,6 +242,3 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/services/reject/{id}', [ServiceController::class, 'reject'])->name('services.reject');
         });
     });
-    
-    
-    
