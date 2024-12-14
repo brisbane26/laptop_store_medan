@@ -55,40 +55,69 @@ class ServiceController extends Controller
 
     // Menyimpan booking service
     public function store(Request $request)
-    {
-        // Validasi input
-        $validatedData = $request->validate([
-            'laptop_model' => 'required|string|max:255',
-            'problem_description' => 'required|string',
-        ]);
-    
-        // Cek apakah pengguna sudah login
-        if (auth()->check()) {
-            try {
-                // Menyimpan data service request
-                Service::create([
-                    'user_id' => auth()->id(),
-                    'laptop_model' => $validatedData['laptop_model'],
-                    'problem_description' => $validatedData['problem_description'],
-                ]);
-    
-                session()->flash('message', 'Your service request has been submitted successfully!');
+{
+    // Validasi input
+    $validatedData = $request->validate([
+        'laptop_model' => 'required|string|max:255',
+        'problem_description' => 'required|string',
+        'equipments' => 'nullable|string',
+        'laptop_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Maks 2MB
+        'order_date' => 'required|date',
+    ]);
 
-                // Redirect kembali dengan pesan sukses
-                return redirect()->route('services.index')->with('message', [
-                    'type' => 'success',
-                    'text' => 'Service request created successfully.',
-                ]);
-            } catch (\Exception $e) {
-                return redirect()->route('services.index')->with('message', [
-                    'type' => 'error',
-                    'text' => 'Failed to create service request.',
-                ]);
+    if (auth()->check()) {
+        try {
+            // Simpan gambar jika ada
+            $imagePath = null;
+            if ($request->hasFile('laptop_image')) {
+                $imagePath = $request->file('laptop_image')->store('images/laptops', 'public');
             }
+
+            // Simpan data ke database
+            Service::create([
+                'user_id' => auth()->id(),
+                'laptop_model' => $validatedData['laptop_model'],
+                'equipments' => $validatedData['equipments'] ?? null,
+                'problem_description' => $validatedData['problem_description'],
+                'laptop_image' => $imagePath,
+                'order_date' => $validatedData['order_date'],
+                'status' => 'pending', // Default status
+            ]);
+
+            session()->flash('message', 'Your service request has been submitted successfully!');
+            return redirect()->route('service.servis_data')->with('message', [
+                'type' => 'success',
+                'text' => 'Service request created successfully.',
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('services.index')->with('message', [
+                'type' => 'error',
+                'text' => 'Failed to create service request.',
+            ]);
         }
     }
-    
-    
+}
+
+public function cancel($id)
+{
+    $service = Service::findOrFail($id);
+
+    // Pastikan hanya customer yang dapat membatalkan dan status pending
+    if (auth()->user()->role_id == 2 && $service->status == 'pending') {
+        $service->delete();
+
+        return redirect()->route('service.servis_data')->with('message', [
+            'type' => 'success',
+            'text' => 'Service request has been canceled and deleted successfully.',
+        ]);
+    }
+
+    return redirect()->route('service.servis_data')->with('message', [
+        'type' => 'error',
+        'text' => 'You cannot cancel this service request.',
+    ]);
+}
+  
     // Menyetujui request service
     public function approve(Request $request, Service $service)
 {
@@ -133,8 +162,13 @@ public function reject(Request $request, $id)
     // Update status
     $service->status = $validated['status'];
 
-    // Jika statusnya done, pastikan harga sudah ditetapkan
-    if ($service->status == 'done' && !$service->price) {
+    // Jika status menjadi 'ready-to-pickup', isi end_date dengan tanggal saat ini
+    if ($validated['status'] === 'ready-to-pickup') {
+        $service->end_date = now(); // Menggunakan helper Laravel untuk mendapatkan tanggal saat ini
+    }
+
+    // Jika statusnya 'done', pastikan harga sudah ditetapkan
+    if ($validated['status'] === 'done' && !$service->price) {
         return back()->with('message', 'Please set the price before completing the service.');
     }
 
@@ -160,6 +194,25 @@ public function history()
 
     $title = "Service History";
     return view('service.servis_history', compact('services', 'title'));
+}
+
+public function downloadInvoice($id)
+{
+    // Cari data service berdasarkan ID
+    $service = Service::findOrFail($id);
+
+    // Load view untuk invoice
+    $html = view('service.service_invoice', compact('service'))->render();
+
+    // Konfigurasi Mpdf
+    $mpdf = new \Mpdf\Mpdf();
+    $mpdf->WriteHTML($html);
+
+    // Download PDF
+    $filename = 'Invoice_Service_' . $service->id . '.pdf';
+    return response($mpdf->Output($filename, \Mpdf\Output\Destination::STRING_RETURN), 200)
+        ->header('Content-Type', 'application/pdf')
+        ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
 }
 
 
