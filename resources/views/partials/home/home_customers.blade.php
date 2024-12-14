@@ -3,10 +3,11 @@
     <div class="row">
       <div class="col-md-6 pt-5 pt-lg-0 order-md-1 d-flex flex-column justify-content-center" data-aos="fade-up">
         <div>
-          <h1>All you need is here</h1>
-          <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Tenetur nobis vero a officiis commodi, nam esse
-            saepe sapiente hic exercitationem reiciendis eveniet ipsa alias accusamus? Non molestias nesciunt
-            accusantium suscipit?</p>
+          <h1>"Apa yang Kamu Butuhin, Ada di Sini!"</h1>
+          <p>Lagi cari laptop buat gaming, kerja, atau cuma buat nonton dan scrolling? 
+            Tenang, semuanya ada di sini! Pilihan lengkap dengan berbagai merek, spesifikasi, 
+            dan harga yang cocok buat kantong kamu. Yuk, langsung cek dan temuin laptop 
+            yang pas banget buat kebutuhan kamu!</p>
           <a href="#about" class="btn-get-started scrollto">Get Started</a>
         </div>
       </div>
@@ -35,10 +36,11 @@
         <div class="col-lg-7 col-md-6">
           <div class="about-content" data-aos="fade-left" data-aos-delay="100">
             <h2>About Laptop Store Medan</h2>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quas, quae saepe alias dicta illum eveniet qui
-              fugiat laborum, molestiae nesciunt placeat aliquam voluptate ratione minus nemo quos consectetur harum id
-              quibusdam cumque odit at, est velit? Neque totam voluptate possimus eum tempore, dolorum odio itaque
-              dolores inventore atque omnis ad.</p>
+            <p>Di Laptop Store Medan, kami menyediakan berbagai pilihan laptop 
+              dari merek ternama dengan harga bersahabat. Mulai dari laptop untuk 
+              kerja, gaming, hingga kebutuhan sehari-hari, semuanya ada di sini! 
+              Pelayanan ramah, produk berkualitas, dan garansi terpercaya bikin kamu belanja dengan tenang. 
+              Langsung datang ke toko kami atau cek online, temukan laptop impianmu sekarang juga di Laptop Store Medan!</p>
           </div>
         </div>
       </div>
@@ -59,11 +61,12 @@
             <div class="icon"><i class="fa fa-fw fa-dumpster"
                 style="font-size: 48px;margin-bottom: 15px;line-height: 1;color:orange;"></i></div>
             <h4 class="title"><a href="">Why Laptop Store Medan?</a></h4>
-            <p class="description">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Unde natus nesciunt
-              exercitationem, libero odit quia consequuntur ullam nostrum ducimus, fugit aspernatur error, placeat
-              voluptatibus incidunt modi eligendi culpa dolor nihil.</p>
-            <p class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ratione hic temporibus, et
-              odit sed ut molestiae. Architecto, suscipit!</p>
+            <p class="description">Laptop Store Medan adalah pilihan terbaik untuk semua kebutuhan laptopmu. 
+              Dengan koleksi lengkap dari berbagai merek ternama, harga yang bersahabat, dan garansi resmi, 
+              kami memastikan kamu mendapatkan produk berkualitas tanpa khawatir. Ditambah lagi, 
+              pelayanan ramah dan promo menarik menjadikan pengalaman belanjamu semakin menyenangkan. 
+              Cari laptop? Jawabannya ada di Laptop Store Medan!</p>
+            
           </div>
         </div>
 
@@ -72,13 +75,11 @@
             <div class="icon"><i class="fa fa-basket-shopping"
                 style="font-size: 48px;margin-bottom: 15px;line-height: 1;color:#3fcdc7;"></i></div>
             <h4 class="title"><a href="">Easy way to order!</a></h4>
-            <p class="description">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolor suscipit odio, autem
-              quos eos eveniet explicabo perferendis dolore quae cum molestiae itaque nostrum!</p>
-            <ul class="description">
-              <li>Lorem ipsum dolor sit amet consectetur.</li>
-              <li>Lorem ipsum dolor sit.</li>
-              <li>Lorem, ipsum dolor.</li>
-            </ul>
+            <p class="description">Belanja laptop di Laptop Store Medan gampang banget! Kamu bisa pesan langsung lewat website, 
+              chat tim kami untuk konsultasi, atau datang ke toko untuk lihat produk secara langsung. 
+              Prosesnya cepat, pembayaran fleksibel, dan barang langsung dikirim dengan aman ke alamatmu. 
+              Enggak perlu ribet, tinggal pilih, bayar, dan tunggu laptop impianmu sampai di rumah!</p>
+          
           </div>
         </div>
       </div>

@@ -241,6 +241,3 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/service/{service}/approve', [ServiceController::class, 'approve'])->name('admin.services.approve');
         });
     });
-    
-    
-    
