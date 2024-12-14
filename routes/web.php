@@ -231,6 +231,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/service/servis_data', [ServiceController::class, 'showData'])->name('service.servis_data');
         Route::get('service/servis_history', [ServiceController::class, 'history'])->name('services.servis_history'); // Rute baru untuk history
         Route::post('service/{service}/done', [ServiceController::class, 'setDone'])->name('services.setDone');
+        Route::patch('/services/{id}/cancel', [ServiceController::class, 'cancel'])->name('services.cancel');
     
         // Rute untuk admin
         Route::middleware('can:is_admin')->prefix('admin')->group(function () {
@@ -241,4 +242,5 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/service/{service}/approve', [ServiceController::class, 'approve'])->name('admin.services.approve');
             Route::post('/services/reject/{id}', [ServiceController::class, 'reject'])->name('services.reject');
         });
+        Route::get('/service/{id}/download-invoice', [ServiceController::class, 'downloadInvoice'])->name('service.downloadInvoice');
     });

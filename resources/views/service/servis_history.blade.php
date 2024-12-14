@@ -46,6 +46,13 @@
                                                         <span class="badge bg-success">Completed</span>
                                                     @endif
                                                 </h5>
+                                                @if ($service->status !== 'rejected')
+                                                <div class="card-footer text-muted">
+                                                    Completed on: {{ $service->updated_at->format('d M Y') }}
+                                                    <a href="{{ route('service.downloadInvoice', $service->id) }}" class="btn btn-primary btn-sm float-right">Download Invoice</a>
+                                                </div>
+                                                @endif
+                                                
                                             </div>
                                         </div>
                                         <div class="card-body">
@@ -55,8 +62,12 @@
                                                 <strong>Email:</strong> {{ $service->user->email }} <br>
                                             @endif
                                             <strong>Laptop Model:</strong> {{ $service->laptop_model }} <br>
+                                            <strong>Equipments:</strong> {{ $service->equipments }} <br>
                                             <strong>Problem Description:</strong> {{ $service->problem_description }} <br>
-                                            <strong>Status:</strong> {{ ucfirst($service->status) }} <br>
+                                            <strong>Service Date:</strong> {{ $service->order_date }} <br>
+                                            <strong>Rejection reason:</strong> {{ ucfirst($service->rejection_reason) }} <br>
+                                            <strong>Laptop image:</strong> <br>
+                                            <img src="{{ asset('storage/' . $service->laptop_image) }}" alt="Laptop Image" width="100" height="100"><br>
                                             @if ($service->price)
                                                 <strong>Price: </strong> Rp {{ number_format($service->price, 2) }} <br>
                                             @endif
