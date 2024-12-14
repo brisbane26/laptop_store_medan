@@ -27,8 +27,8 @@
                         <div class="mt-5">
                             @if(count($services) > 0)
                             @foreach($services as $service)
-                            @if($service->status != 'done')
-                                <div class="card mb-3">
+                            @if($service->status != 'done' && $service->status != 'rejected')
+                            <div class="card mb-3">
                                     <div class="card-header">
                                         <div class="d-flex justify-content-between align-items-center">
                                             <h5 class="order-header mb-0">
@@ -44,6 +44,12 @@
                                                     <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#approveModal{{ $service->id }}">
                                                         Approve
                                                     </button>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" 
+                                                    data-bs-toggle="modal" data-bs-target="#ModalRejectService" 
+                                                    data-service-id="{{ $service->id }}">
+                                                    Reject
+                                                 </button>
+
                                                 @elseif ($service->status == 'approved' || $service->status == 'in-progress' || $service->status == 'ready-to-pickup')
                                                     <!-- Form untuk mengubah status service -->
                                                     <form method="post" action="{{ route('services.updateStatus', $service) }}" class="me-2">
@@ -67,6 +73,13 @@
                                         <strong>Laptop Model:</strong> {{ $service->laptop_model }} <br>
                                         <strong>Problem Description:</strong> {{ $service->problem_description }} <br>
                                         <strong>Status:</strong> {{ ucfirst($service->status) }} <br>
+
+                                        @if( $service->status == 'rejected')
+                                            <div class="mt-3">
+                                                <strong>Reason for Rejection:</strong>
+                                                <p class="text-danger">{{ $service->rejection_reason }}</p>
+                                            </div>
+                                        @endif
 
                                         <!-- Price input if status is approved -->
                                         @if ($service->status == 'approved' && !$service->price)
@@ -109,6 +122,43 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Modal Reject -->
+<div class="modal fade" id="ModalRejectService" tabindex="-1" aria-labelledby="ModalRejectServiceLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" action="" id="rejectServiceForm">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalRejectServiceLabel">Reject Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason for Rejection</label>
+                        <textarea name="reason" id="reason" class="form-control" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const rejectModal = document.getElementById('ModalRejectService');
+    rejectModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget; // Tombol yang memicu modal
+        const serviceId = button.getAttribute('data-service-id'); // Ambil ID service dari tombol
+        const form = rejectModal.querySelector('form'); // Ambil form dari modal
+        form.action = `/admin/services/reject/${serviceId}`;
+    });
+</script>
+
+
                                 @endif
                                 @endforeach
                             @else
