@@ -24,7 +24,7 @@ class ServiceController extends Controller
             return redirect()->route('login')->with('message', 'You must be logged in to access this page.');
         }
 
-        $services = Service::where('status', '!=', 'done')->get(); 
+        $services = Service::whereIn('status', ['pending', 'approved', 'in-progress', 'ready-to-pickup'])->get();
         $title = "Service Bookings";
 
         // Jika role user adalah admin, arahkan ke tampilan admin
@@ -72,6 +72,8 @@ class ServiceController extends Controller
                     'problem_description' => $validatedData['problem_description'],
                 ]);
     
+                session()->flash('message', 'Your service request has been submitted successfully!');
+
                 // Redirect kembali dengan pesan sukses
                 return redirect()->route('services.index')->with('message', [
                     'type' => 'success',
@@ -110,6 +112,16 @@ class ServiceController extends Controller
     return back()->with('success', 'Service approved successfully!');
 }
 
+public function reject(Request $request, $id)
+{
+    $service = Service::findOrFail($id); // Cari service berdasarkan ID
+    $service->status = 'rejected'; // Ubah status menjadi rejected
+    $service->rejection_reason = $request->input('reason'); // Simpan alasan penolakan
+    $service->save(); // Simpan perubahan
+
+    return redirect()->back()->with('message', '<div class="alert alert-success">Service rejected successfully!</div>');
+}
+
     // Mengupdate status service
     public function updateStatus(Request $request, Service $service)
 {
@@ -135,13 +147,13 @@ public function history()
 {
     if (auth()->user()->role_id === 1 || auth()->user()->role_id === 3) {
         $services = Service::with('user')  // Pastikan relasi user dimuat
-            ->where('status', 'done')
+            ->whereIn('status', ['done', 'rejected'])
             ->orderBy('updated_at', 'desc')
             ->get();
     } else {
         $services = Service::with('user')  // Pastikan relasi user dimuat
             ->where('user_id', auth()->id())
-            ->where('status', 'done')
+            ->whereIn('status', ['done', 'rejected'])
             ->orderBy('updated_at', 'desc')
             ->get();
     }

@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('laptop_model')->nullable(false); // Tidak nullable, wajib diisi
             $table->text('problem_description')->nullable(false); // Tidak nullable, wajib diisi
             $table->decimal('price', 10, 2)->nullable(); // Harga service, nullable
-            $table->enum('status', ['pending', 'approved', 'in-progress', 'ready-to-pickup','done'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'in-progress', 'ready-to-pickup','done','rejected'])->default('pending');
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
     }

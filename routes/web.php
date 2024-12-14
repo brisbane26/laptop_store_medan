@@ -239,6 +239,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/service/servis_history', [ServiceController::class, 'history'])->name('admin.servis_history');
             Route::post('/services/{service}/update-status', [ServiceController::class, 'updateStatus'])->name('services.updateStatus');
             Route::post('/service/{service}/approve', [ServiceController::class, 'approve'])->name('admin.services.approve');
+            Route::post('/services/reject/{id}', [ServiceController::class, 'reject'])->name('services.reject');
         });
     });
     
