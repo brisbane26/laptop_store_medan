@@ -11,7 +11,7 @@ class Service extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'customer_name', 'laptop_model', 'problem_description', 'price', 'status'];
+    protected $fillable = ['user_id', 'customer_name', 'laptop_model', 'problem_description', 'price', 'status','rejection_reason'];
     
     // Relasi dengan User
     public function user()

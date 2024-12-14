@@ -24,7 +24,7 @@ class ServiceController extends Controller
             return redirect()->route('login')->with('message', 'You must be logged in to access this page.');
         }
 
-        $services = Service::where('status', '!=', 'done')->get(); 
+        $services = Service::whereIn('status', ['pending', 'approved', 'in-progress', 'ready-to-pickup'])->get();
         $title = "Service Bookings";
 
         // Jika role user adalah admin, arahkan ke tampilan admin
@@ -57,24 +57,37 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         // Validasi input
-        $validatedData=$request->validate([
-            'laptop_model' => 'required|string|max:255', // Pastikan laptop_model ada
-            'problem_description' => 'required|string', // Pastikan problem_description ada
+        $validatedData = $request->validate([
+            'laptop_model' => 'required|string|max:255',
+            'problem_description' => 'required|string',
         ]);
     
         // Cek apakah pengguna sudah login
         if (auth()->check()) {
-            // Menyimpan data service request
-            Service::create([
-                'user_id' => auth()->id(),
-                'laptop_model' => $validatedData['laptop_model'],
-                'problem_description' =>$validatedData['problem_description'],
-            ]);
+            try {
+                // Menyimpan data service request
+                Service::create([
+                    'user_id' => auth()->id(),
+                    'laptop_model' => $validatedData['laptop_model'],
+                    'problem_description' => $validatedData['problem_description'],
+                ]);
     
-            // Redirect kembali dengan pesan sukses
-            return redirect()->route('services.index')->with('success', 'Service request created successfully.');
-        } 
+                session()->flash('message', 'Your service request has been submitted successfully!');
+
+                // Redirect kembali dengan pesan sukses
+                return redirect()->route('services.index')->with('message', [
+                    'type' => 'success',
+                    'text' => 'Service request created successfully.',
+                ]);
+            } catch (\Exception $e) {
+                return redirect()->route('services.index')->with('message', [
+                    'type' => 'error',
+                    'text' => 'Failed to create service request.',
+                ]);
+            }
+        }
     }
+    
     
     // Menyetujui request service
     public function approve(Request $request, Service $service)
@@ -97,6 +110,16 @@ class ServiceController extends Controller
 
     // Redirect ke halaman daftar service dengan pesan sukses
     return back()->with('success', 'Service approved successfully!');
+}
+
+public function reject(Request $request, $id)
+{
+    $service = Service::findOrFail($id); // Cari service berdasarkan ID
+    $service->status = 'rejected'; // Ubah status menjadi rejected
+    $service->rejection_reason = $request->input('reason'); // Simpan alasan penolakan
+    $service->save(); // Simpan perubahan
+
+    return redirect()->back()->with('message', '<div class="alert alert-success">Service rejected successfully!</div>');
 }
 
     // Mengupdate status service
@@ -124,13 +147,13 @@ public function history()
 {
     if (auth()->user()->role_id === 1 || auth()->user()->role_id === 3) {
         $services = Service::with('user')  // Pastikan relasi user dimuat
-            ->where('status', 'done')
+            ->whereIn('status', ['done', 'rejected'])
             ->orderBy('updated_at', 'desc')
             ->get();
     } else {
         $services = Service::with('user')  // Pastikan relasi user dimuat
             ->where('user_id', auth()->id())
-            ->where('status', 'done')
+            ->whereIn('status', ['done', 'rejected'])
             ->orderBy('updated_at', 'desc')
             ->get();
     }
