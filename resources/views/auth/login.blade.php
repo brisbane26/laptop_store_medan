@@ -52,6 +52,9 @@
 
                                 <div class="text-center">
                                     <a class="small" href="/auth/register">Belum memiliki akun? Buat sekarang!</a>
+                                    <br>
+                                    <!-- Forgot Password Link -->
+                                    <a class="small" href="/auth/forgot-password">Lupa kata sandi?</a>
                                 </div>
                             </div>
                         </div>
