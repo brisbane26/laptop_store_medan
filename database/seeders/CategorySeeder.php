@@ -20,7 +20,7 @@ class CategorySeeder extends Seeder
         ]);
 
         Category::create([
-            "category_name" => "Production Cost",
+            "category_name" => "Employee Salary",
         ]);
 
         Category::create([

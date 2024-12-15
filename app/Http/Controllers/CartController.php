@@ -29,10 +29,13 @@ class CartController extends Controller
             return response()->json(['message' => 'Produk tidak ditemukan!'], 404);
         }
     
-        $cart = Cart::updateOrCreate(
-            ['user_id' => auth()->id(), 'product_id' => $productId],
-            ['quantity' => \DB::raw("quantity + $quantity")]
+        $cart = Cart::firstOrCreate(
+            ['user_id' => auth()->id(), 'product_id' => $productId]
         );
+        
+        // Update quantity secara manual
+        $cart->quantity += $quantity;
+        $cart->save();        
     
         return response()->json(['message' => 'Barang berhasil ditambahkan ke keranjang!']);
     }    

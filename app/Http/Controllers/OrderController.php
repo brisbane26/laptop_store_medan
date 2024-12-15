@@ -143,34 +143,49 @@ class OrderController extends Controller
         return response()->json($order);
     }    
     
-
     public function cancelOrder(Order $order)
     {
         if ($order->status_id == 5) {
             $message = "Your order is already canceled!";
-
+    
             myFlasherBuilder(message: $message, failed: true);
             return redirect("/order/order_data");
         }
+    
         $updated_data = [
             "status_id" => 5,
             "note_id" => 6,
             "refusal_reason" => null,
         ];
-
+    
         $order->fill($updated_data);
-
+    
         if ($order->isDirty()) {
             $order->save();
-
+    
+            // Panggil kembali fungsi couponBack
             $this->couponBack($order);
-
+    
             $message = "Your order has been canceled!";
-
+    
             myFlasherBuilder(message: $message, success: true);
             return redirect("/order/order_data");
         }
     }
+    
+    private function couponBack(Order $order)
+    {
+        // Kembalikan kupon pengguna jika menggunakan kupon
+        $user = Auth::user();
+    
+        $new_coupon = (int)$user->coupon + (int)$order->coupon_used;
+    
+        $user->coupon = $new_coupon;
+    
+        if ($user->isDirty()) {
+            $user->save();
+        }
+    }    
 
 
     public function rejectOrder(Request $request, Order $order)

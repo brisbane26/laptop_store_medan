@@ -69,9 +69,12 @@ class ProductController extends Controller
                 "buy_price" => "required|numeric|gt:0",
                 "sell_price" => "required|numeric|gt:0|gte:buy_price",
                 "stock" => "required|numeric|gt:0",
-                "discount" => "required|numeric|gt:0|lt:100",
+                "discount" => "nullable|numeric|gt:0|lt:100",
                 "image" => "image|max:2048|mimes:jpeg,png,jpg", // Tipe file ditentukan
             ]);
+
+            // Pastikan discount memiliki nilai default jika tidak diisi
+            $validatedData['discount'] = $validatedData['discount'] ?? 0;
     
             \Log::info("Validation passed", ['validatedData' => $validatedData]);
     
@@ -154,9 +157,12 @@ class ProductController extends Controller
             'buy_price' => 'required|numeric|gt:0',
             'sell_price' => 'required|numeric|gt:0',
             'stock' => 'required|numeric|gt:0',
-            'discount' => 'required|numeric|gte:0|lt:100',
+            'discount' => 'nullable|numeric|gte:0|lt:100',
             'image' => 'image|file|max:2048'
         ];
+
+        // Pastikan discount memiliki nilai default jika tidak diisi
+        $validatedData['discount'] = $validatedData['discount'] ?? 0;
     
         if ($product->product_name != $request->product_name) {
             $rules['product_name'] = 'required|max:255|unique:products,product_name';
