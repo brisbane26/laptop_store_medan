@@ -22,8 +22,10 @@ return new class extends Migration
             $table->integer('buy_price');
             $table->integer('sell_price');
             $table->integer('stock');
-            $table->integer('discount');
+            $table->integer('discount')->default(0);            
             $table->string('image');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
     }

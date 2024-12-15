@@ -72,7 +72,7 @@ class ProductController extends Controller
                 "discount" => "nullable|numeric|gt:0|lt:100",
                 "image" => "image|max:2048|mimes:jpeg,png,jpg", // Tipe file ditentukan
             ]);
-
+    
             // Pastikan discount memiliki nilai default jika tidak diisi
             $validatedData['discount'] = $validatedData['discount'] ?? 0;
     
@@ -101,10 +101,13 @@ class ProductController extends Controller
         }
     
         try {
+            // Menambahkan 'created_by' ke dalam validated data
+            $validatedData['created_by'] = auth()->user()->id; // Mendapatkan ID pengguna yang sedang login
+    
             // Panggil stored procedure
             \Log::info("Calling stored procedure", ['procedure' => 'add_product_procedure', 'params' => $validatedData]);
     
-            DB::select('CALL add_product_procedure(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+            DB::select('CALL add_product_procedure(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
                 $validatedData['product_name'],
                 $validatedData['category'],
                 $validatedData['orientation'],
@@ -114,6 +117,7 @@ class ProductController extends Controller
                 $validatedData['stock'],
                 $validatedData['discount'],
                 $validatedData['image'],
+                $validatedData['created_by'], // Parameter created_by ditambahkan
             ]);
     
             \Log::info("Stored procedure executed successfully");
@@ -135,9 +139,7 @@ class ProductController extends Controller
             \Log::error("Unexpected error", ['message' => $e->getMessage()]);
             return back()->withErrors(['error' => 'An unexpected error occurred.']);
         }
-    }
-    
-
+    }    
 
     public function editProductGet(Product $product)
     {
@@ -149,56 +151,53 @@ class ProductController extends Controller
 
 
     public function editProductPost(Request $request, Product $product)
-    {
-        $rules = [
-            'category' => 'required|in:new_laptop,second_laptop,others',
-            'orientation' => 'required',
-            'description' => 'required',
-            'buy_price' => 'required|numeric|gt:0',
-            'sell_price' => 'required|numeric|gt:0',
-            'stock' => 'required|numeric|gt:0',
-            'discount' => 'nullable|numeric|gte:0|lt:100',
-            'image' => 'image|file|max:2048'
-        ];
+{
+    $rules = [
+        'category' => 'required|in:new_laptop,second_laptop,others',
+        'orientation' => 'required',
+        'description' => 'required',
+        'buy_price' => 'required|numeric|gt:0',
+        'sell_price' => 'required|numeric|gt:0',
+        'stock' => 'required|numeric|gt:0',
+        'discount' => 'nullable|numeric|gte:0|lt:100',
+        'image' => 'image|file|max:2048'
+    ];
 
-        // Pastikan discount memiliki nilai default jika tidak diisi
-        $validatedData['discount'] = $validatedData['discount'] ?? 0;
-    
-        if ($product->product_name != $request->product_name) {
-            $rules['product_name'] = 'required|max:255|unique:products,product_name';
-        } else {
-            $rules['product_name'] = 'required|max:255';
-        }
-    
-        $validatedData = $request->validate($rules);
-    
-        try {
-            if ($request->file('image')) {
-                if ($request->oldImage && $request->oldImage != env("IMAGE_PRODUCT")) {
-                    Storage::delete($request->oldImage);
-                }
-    
-                $validatedData['image'] = $request->file('image')->store('product');
-            }
-    
-            $product->fill($validatedData);
-    
-            if ($product->isDirty()) {
-                $product->save();
-    
-                $message = 'Product has been updated!';
-                myFlasherBuilder(message: $message, success: true);
-                return redirect('/product');
-            } else {
-                $message = 'Action <strong>failed</strong>, no changes detected!';
-                myFlasherBuilder(message: $message, failed: true);
-                return back();
-            }
-        } catch (\Illuminate\Database\QueryException $exception) {
-            return abort(500);
-        }
+    if ($product->product_name != $request->product_name) {
+        $rules['product_name'] = 'required|max:255|unique:products,product_name';
+    } else {
+        $rules['product_name'] = 'required|max:255';
     }
-    
+
+    $validatedData = $request->validate($rules);
+
+    // Set default discount if not provided
+    $validatedData['discount'] = $validatedData['discount'] ?? 0;
+
+    $validatedData['updated_by'] = auth()->id(); // Set updated_by with authenticated user ID
+
+    try {
+        if ($request->file('image')) {
+            if ($request->oldImage && $request->oldImage != env("IMAGE_PRODUCT")) {
+                Storage::delete($request->oldImage); // Delete old image if exists
+            }
+            $validatedData['image'] = $request->file('image')->store('product');
+        }
+
+        $product->fill($validatedData);
+
+        if ($product->isDirty()) {
+            $product->save();
+            myFlasherBuilder(message: 'Product has been updated!', success: true);
+            return redirect('/product');
+        } else {
+            myFlasherBuilder(message: 'Action <strong>failed</strong>, no changes detected!', failed: true);
+            return back();
+        }
+    } catch (\Illuminate\Database\QueryException $exception) {
+        return abort(500); // Handle database error
+    }
+} 
 }
 
 class LandingController extends Controller
