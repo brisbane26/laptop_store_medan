@@ -31,6 +31,20 @@ Route::middleware(['alreadyLogin'])->group(function () {
     // Register
     Route::get('/auth/register', [AuthController::class, "registrationGet"]);
     Route::post('/auth/register', [AuthController::class, "registrationPost"]);
+
+   // Rute untuk menampilkan form forgot password
+Route::get('/auth/forgot-password', [AuthController::class, 'forgotPasswordGet'])->name('auth.forgot-password');
+
+// Rute untuk menangani request POST untuk verifikasi email
+Route::post('/auth/forgot-password', [AuthController::class, 'forgotPasswordPost'])->name('auth.forgot-password-post');
+
+// Rute untuk menampilkan form reset password
+Route::get('/auth/reset-password', [AuthController::class, 'resetPasswordGet'])->name('auth.reset-password');
+
+// Rute untuk menangani request POST untuk reset password
+Route::post('/auth/reset-password', [AuthController::class, 'resetPasswordPost'])->name('auth.reset-password-post');
+
+
 });
 
 // main
