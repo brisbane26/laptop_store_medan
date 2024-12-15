@@ -52,6 +52,8 @@ class ProductSeeder extends Seeder
             "stock" => 50,
             "discount" => 10,
             "image" => "product/ASUS_ROG_Zephyrus_G14.jpg",
+            "created_by" => 1,
+            "updated_by" => null,
         ]);
 
         Product::create([
@@ -71,6 +73,8 @@ class ProductSeeder extends Seeder
             "stock" => 40,
             "discount" => 5,
             "image" => "product/Dell_XPS_13_Plus.jpg",
+            "created_by" => 1,
+            "updated_by" => null,
         ]);
 
         Product::create([
@@ -90,6 +94,8 @@ class ProductSeeder extends Seeder
             "stock" => 30,
             "discount" => 7,
             "image" => "product/MacBook_Pro_14-inch_M2_Pro.jpg",
+            "created_by" => 1,
+            "updated_by" => null,
         ]);
 
         Product::create([
@@ -109,6 +115,8 @@ class ProductSeeder extends Seeder
             "stock" => 25,
             "discount" => 8,
             "image" => "product/HP_Spectre_x360.jpeg",
+            "created_by" => 1,
+            "updated_by" => null,
         ]);
 
         Product::create([
@@ -128,6 +136,8 @@ class ProductSeeder extends Seeder
             "stock" => 60,
             "discount" => 10,
             "image" => "product/Lenovo_Legion_5_Pro.jpeg",
+            "created_by" => 1,
+            "updated_by" => null,
         ]);
 
         Product::create([
@@ -147,6 +157,8 @@ class ProductSeeder extends Seeder
             "stock" => 70,
             "discount" => 5,
             "image" => "product/Acer_Swift_3_OLED.jpg",
+            "created_by" => 1,
+            "updated_by" => null,
         ]);
 
         Product::create([
@@ -166,6 +178,8 @@ class ProductSeeder extends Seeder
             "stock" => 80,
             "discount" => 15,
             "image" => "product/ASUS_TUF_F15.jpg",
+            "created_by" => 1,
+            "updated_by" => null,
         ]);
 
         Product::create([
@@ -185,6 +199,8 @@ class ProductSeeder extends Seeder
         "stock" => 20,
         "discount" => 12,
         "image" => "product/Razer_Blade_15.jpg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -204,6 +220,8 @@ class ProductSeeder extends Seeder
         "stock" => 40,
         "discount" => 7,
         "image" => "product/Microsoft_Surface_Laptop_5.jpeg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -223,6 +241,8 @@ class ProductSeeder extends Seeder
         "stock" => 30,
         "discount" => 10,
         "image" => "product/Acer_Predator_Helios_300.jpg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -242,6 +262,8 @@ class ProductSeeder extends Seeder
         "stock" => 45,
         "discount" => 8,
         "image" => "product/ASUS_VivoBook_Pro_16X.png",
+        "created_by" => 1,
+        "updated_by" => null,
          ]);
 
         Product::create([
@@ -261,6 +283,8 @@ class ProductSeeder extends Seeder
         "stock" => 35,
         "discount" => 10,
         "image" => "product/Lenovo_ThinkPad_X1_Carbon.jpg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -280,6 +304,8 @@ class ProductSeeder extends Seeder
         "stock" => 50,
         "discount" => 12,
         "image" => "product/MSI_Katana_GF66.jpg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -299,6 +325,8 @@ class ProductSeeder extends Seeder
         "stock" => 25,
         "discount" => 10,
         "image" => "product/Dell_Alienware_x14.jpg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -318,6 +346,8 @@ class ProductSeeder extends Seeder
         "stock" => 40,
         "discount" => 9,
         "image" => "product/HP_Omen_16.png",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -337,6 +367,8 @@ class ProductSeeder extends Seeder
         "stock" => 15,
         "discount" => 8,
         "image" => "product/Gigabyte_Aero_16.jpeg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -355,6 +387,8 @@ class ProductSeeder extends Seeder
         "stock" => 30,
         "discount" => 10,
         "image" => "product/ASUS_ZenBook_Duo_14.png",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -373,6 +407,8 @@ class ProductSeeder extends Seeder
         "stock" => 45,
         "discount" => 5,
         "image" => "product/Razer_Book_13.jpg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
         Product::create([
@@ -391,6 +427,8 @@ class ProductSeeder extends Seeder
         "stock" => 50,
         "discount" => 6,
         "image" => "product/MacBook_Air_M2.jpeg",
+        "created_by" => 1,
+        "updated_by" => null,
         ]);
 
 

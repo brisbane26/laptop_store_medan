@@ -66,6 +66,10 @@
                     <a class="nav-link" href="/service/servis_history">Service History</a>
                 </nav>
             </div>
+            <a class="nav-link" href="/product-logs">
+                <div class="sb-nav-link-icon"><i class="fas fa-fw fa-list-alt"></i></div>
+                Logs
+            </a>
             @endcan
 
             @cannot("is_admin")

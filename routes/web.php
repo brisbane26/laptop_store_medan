@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController, ServiceController};
+use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController, ServiceController, ProductLogController};
 
 /*
 |--------------------------------------------------------------------------
@@ -243,4 +243,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/services/reject/{id}', [ServiceController::class, 'reject'])->name('services.reject');
         });
         Route::get('/service/{id}/download-invoice', [ServiceController::class, 'downloadInvoice'])->name('service.downloadInvoice');
+    });
+
+    Route::middleware(['can:is_owner'])->group(function () {
+        Route::get('/product-logs', [ProductLogController::class, 'index'])->name('product-logs.index');
     });
