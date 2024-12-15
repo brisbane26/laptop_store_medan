@@ -9,7 +9,7 @@
             </a>
             <a class="nav-link" href="/home/customers">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-solid fa-users"></i></div>
-                Customers
+                Users
             </a>
             <a class="nav-link" href="/transaction">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dollar-sign"></i></div>
@@ -37,7 +37,7 @@
             </a>
             <a class="nav-link" href="/home/customers">
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-solid fa-users"></i></div>
-                Customers
+                Users
             </a>
             <a class="nav-link" href="/transaction">
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dollar-sign"></i></div>
@@ -111,18 +111,25 @@
                 Contact Us
             </a>
             @endif
-            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts"
-              aria-expanded="false" aria-controls="collapseLayouts">
-                <div class="sb-nav-link-icon"><i class="fas fa-fw fa-columns"></i></div>
-                Order
-                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-fw fa-angle-down"></i></div>
-            </a>
-            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne">
-                <nav class="sb-sidenav-menu-nested nav">
-                    <a class="nav-link" href="/order/order_data">Order Data</a>
-                    <a class="nav-link" href="/order/order_history">Order History</a>
-                </nav>
-            </div>
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsOrder"
+            aria-expanded="false" aria-controls="collapseLayoutsOrder">
+              <div class="sb-nav-link-icon"><i class="fas fa-fw fa-columns"></i></div>
+              Order
+              <div class="sb-sidenav-collapse-arrow"><i class="fas fa-fw fa-angle-down"></i></div>
+          </a>
+          <div class="collapse" id="collapseLayoutsOrder" aria-labelledby="headingOne">
+              <nav class="sb-sidenav-menu-nested nav">
+                  @can("is_owner")
+                      <!-- Hanya tampilkan Order History untuk Owner -->
+                      <a class="nav-link" href="/order/order_history">Order History</a>
+                  @else
+                      <!-- Tampilkan Order Data dan Order History untuk Admin atau role lain -->
+                      <a class="nav-link" href="/order/order_data">Order Data</a>
+                      <a class="nav-link" href="/order/order_history">Order History</a>
+                  @endcan
+              </nav>
+          </div>
+          
         </div>
     </div>
     <div class="sb-sidenav-footer">

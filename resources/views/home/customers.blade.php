@@ -28,8 +28,8 @@
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, hapus!',
-                    cancelButtonText: 'Batal'
+                    confirmButtonText: 'Yes, delete it!',
+                    cancelButtonText: 'Cancel'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         form.submit(); // Submit form jika konfirmasi diterima
@@ -69,7 +69,7 @@
     <div class="card mb-4">
         <div class="card-header">
             <i class="fas fa-fw fa-users me-1"></i>
-            Customers
+            Users
         </div>
         <div class="card-body">
             <table id="datatablesSimple" class="table table-striped table-bordered">

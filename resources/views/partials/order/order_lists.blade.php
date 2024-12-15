@@ -94,14 +94,16 @@
     <div class="card-footer text-muted">
         Order {{ $order->is_done ? 'ends' : 'created' }} at {{ $order->updated_at->format('d M Y') }} by 
         @if ($order->is_done)
-        <span class="link-danger" style="cursor: pointer;">@admin</span>
+            <span class="text-danger" style="cursor: default;">
+                {{ "@" . ($order->admin()->username ?? 'admin') }}
+            </span>
         @else
-        <a href="{{ auth()->user()->role_id == 1 ? "/home/customers?username=" . $order->user->username : "/profile/my_profile" }}" 
-            style="text-decoration: none;">
-            {{ "@" . $order->user->username }}
-        </a>
+            <a href="{{ auth()->user()->role_id == 1 ? "/home/customers?username=" . $order->user->username : "/profile/my_profile" }}" 
+                style="text-decoration: none;">
+                {{ "@" . $order->user->username }}
+            </a>
         @endif
-    </div>
+    </div>    
 </div>
 @endforeach
 

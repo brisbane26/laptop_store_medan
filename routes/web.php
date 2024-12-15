@@ -105,10 +105,10 @@ Route::middleware(['auth'])->group(function () {
     // transaction
     Route::controller(TransactionController::class)->group(function () {
         Route::get("/transaction", "index");
-        Route::get("/transaction/add_outcome", "addOutcomeGet")->can("is_admin");
-        Route::post("/transaction/add_outcome", "addOutcomePost")->can("is_admin");
-        Route::get("/transaction/edit_outcome/{transaction}", "editOutcomeGet")->can("is_admin");
-        Route::post("/transaction/edit_outcome/{transaction}", "editOutcomePost")->can("is_admin");
+        Route::get("/transaction/add_outcome", "addOutcomeGet");
+        Route::post("/transaction/add_outcome", "addOutcomePost");
+        Route::get("/transaction/edit_outcome/{transaction}", "editOutcomeGet");
+        Route::post("/transaction/edit_outcome/{transaction}", "editOutcomePost");
     });
 
     // point
