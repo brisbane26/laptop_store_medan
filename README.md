@@ -16,9 +16,9 @@
 Laptop Store Medan adalah aplikasi web yang dibuat menggunakan framework Laravel yang dibuat untuk mencari dan memesan segala kebutuhan tentang laptop.
 
 ## Features
-Login & Register
-Forgot Password
-Level User
+- Login & Register
+- Forgot Password
+- Level User
 
 1.	Costumer
 - melihat product.
