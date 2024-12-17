@@ -67,8 +67,8 @@ class ProductController extends Controller
                 "description" => "required",
                 "buy_price" => "required|numeric|gt:0",
                 "sell_price" => "required|numeric|gt:0|gte:buy_price",
-                "stock" => "required|numeric|gt:0",
-                "discount" => "nullable|numeric|gt:0|lt:100",
+                "stock" => "required|numeric|min:0",
+                "discount" => "nullable|numeric|min:0|max:99",
                 "image" => "image|max:2048|mimes:jpeg,png,jpg", // Tipe file ditentukan
             ]);
     
@@ -157,8 +157,8 @@ class ProductController extends Controller
         'description' => 'required',
         'buy_price' => 'required|numeric|gt:0',
         'sell_price' => 'required|numeric|gt:0',
-        'stock' => 'required|numeric|gt:0',
-        'discount' => 'nullable|numeric|gte:0|lt:100',
+        'stock' => 'required|numeric|min:0',
+        "discount" => "nullable|numeric|min:0|max:99",
         'image' => 'image|file|max:2048'
     ];
 
