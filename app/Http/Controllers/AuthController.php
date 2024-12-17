@@ -74,19 +74,20 @@ class AuthController extends Controller
         }
     }
 
-    public function logoutPost()
-    {
-        try {
-            Auth::logout();
-            request()->session()->invalidate();
-            request()->session()->regenerateToken();
-            $message = "Session ended, you logout <strong>successfully</strong>";
+        public function logoutPost()
+{
+    try {
+        Auth::logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        $message = "Session ended, you logout <strong>successfully</strong>";
+        session()->flash('message', $message);
+        session()->flash('alert-class', 'alert-success');
+        return redirect( route('landing.index') );
+    } catch (\Exception $exception) {
+        return abort(500);
+    }
 
-            myFlasherBuilder(message: $message, success: true);
-            return redirect('/auth');
-        } catch (\Illuminate\Database\QueryException $exception) {
-            return abort(500);
-        }
     }
 
    // Forgot Password (Email Validation)

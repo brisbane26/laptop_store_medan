@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController, ServiceController, ProductLogController};
+use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController, LandingController, ServiceController, ProductLogController};
 
 /*
 |--------------------------------------------------------------------------
@@ -15,14 +15,17 @@ use App\Http\Controllers\{AuthController, CartController, HomeController, OrderC
 |
 */
 
+Route::get('/', [LandingController::class, 'index'])->name('landing.index');
+Route::get('/product/data/{id}', [LandingController::class, 'getProductData']);
+
 // pre authenticate
 Route::middleware(['alreadyLogin'])->group(function () {
     // landing
-    Route::get('/', function () {
-        return view('landing.index', [
-            "title" => "Landing",
-        ]);
-    });
+    // Route::get('/', function () {
+    //     return view('landing.index', [
+    //         "title" => "Landing",
+    //     ]);
+    // });
 
     // Login
     Route::get('/{url}', [AuthController::class, "loginGet"])->where(["url" => "auth|auth/login"])->name("auth");
