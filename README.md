@@ -112,8 +112,7 @@ To run Laracoffee locally, follow these steps:
 
 
 ## Technologies
-- PHP v8.2
-- HTML, CSS, JavaScript
-- Protege
-- Jena Fuseki
+- PHP 
+- HTML, CSS, JavaScript, Blade
+- Laravel
 - Laragon/XAMPP
