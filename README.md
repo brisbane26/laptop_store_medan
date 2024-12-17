@@ -21,38 +21,38 @@ Forgot Password
 Level User
 
 1.	Costumer
-- melihat product
--mencari product
--menambahkan keranjang
--melihat daftar product yang masuk ke keranjang
--checkout barang yang ada pada cart
--melihat detail pemesanan
--melakukan pembayaran
--melihat status pesanan
--melakukan pemesanan service
--melihat Riwayat pesanan
--mendownload struk pesanan
+- melihat product.
+- mencari product.
+- menambahkan keranjang.
+- melihat daftar product yang masuk ke keranjang.
+- checkout barang yang ada pada cart.
+- melihat detail pemesanan.
+- melakukan pembayaran.
+- melihat status pesanan.
+- melakukan pemesanan service.
+- melihat Riwayat pesanan.
+- mendownload struk pesanan.
 
 2.	Admin
--melihat peningkatan penjualan (dashboard)
--melihat user
--melihat daftar product
--mencari product
--mengelola product
--mengelola service
--melihat daftar pesanan
--melihat Riwayat pesanan
--mengkonfirmasi pesanan
+- melihat peningkatan penjualan (dashboard).
+- melihat user.
+- melihat daftar product.
+- mencari product.
+- mengelola product.
+- mengelola service.
+- melihat daftar pesanan.
+- melihat Riwayat pesanan.
+- mengkonfirmasi pesanan.
 
 3.	Owner
--melihat product
--mengelola product
--melihat peningkatan penjualan
--mengelola admin
--mengelola costumer
--melihat daftar pesanan
--melihat Riwayat pesanan
--melihat Logs Admin
+- melihat product.
+- mengelola product.
+- melihat peningkatan penjualan.
+- mengelola admin.
+- mengelola costumer.
+- melihat daftar pesanan.
+- melihat Riwayat pesanan.
+- melihat Logs Admin.
 
 
 ## Installation
@@ -63,7 +63,7 @@ To run Laptop Store Medan di device anda, lakukan:
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/brisbane26/laptop_store_medan.com.
+   git clone https://github.com/brisbane26/laptop_store_medan.com
    ```
 2. Change to the project directory
     ```bash
