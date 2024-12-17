@@ -45,6 +45,7 @@ Level User
 - mengkonfirmasi pesanan.
 
 3.	Owner
+- melihat peningkatan penjualan (dashboard).
 - melihat product.
 - mengelola product.
 - melihat peningkatan penjualan.
