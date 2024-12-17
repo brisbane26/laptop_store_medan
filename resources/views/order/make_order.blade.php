@@ -157,8 +157,8 @@
                     <small class="rek-title">Atas Nama: </small>
                   </div>
                   <div class="d-flex justify-content-between mt-1">
-                    <small class="no-rek">092 7840 1923 7422</small>
-                    <small class="salin-rek">Moh. Najib Fikri</small>
+                    <small class="no-rek">121 4927 1923 1412</small>
+                    <small class="salin-rek">Jesica Maha</small>
                   </div>
                   <div class="divider"></div>
                   <small class="note">Akan dicek dalam 10 menit setelah pembayaran berhasil</small>
@@ -180,8 +180,8 @@
                     <small class="rek-title">Atas Nama: </small>
                   </div>
                   <div class="rek-content d-flex justify-content-between mt-1">
-                    <small class="no-rek">058 9092 8274 9125</small>
-                    <small class="salin-rek">Moh. Najib Fikri</small>
+                    <small class="no-rek">081 9082 8214 9125</small>
+                    <small class="salin-rek">Jesica Maha</small>
                   </div>
                   <div class="divider"></div>
                   <small class="note">Akan dicek dalam 10 menit setelah pembayaran berhasil</small>
@@ -202,8 +202,8 @@
                     <small class="rek-title">Atas Nama: </small>
                   </div>
                   <div class="rek-content d-flex justify-content-between mt-1">
-                    <small class="no-rek">088 7182 4291 9123</small>
-                    <small class="salin-rek">Moh. Najib Fikri</small>
+                    <small class="no-rek">048 7182 4291 9123</small>
+                    <small class="salin-rek">Jesica Maha</small>
                   </div>
                   <div class="divider"></div>
                   <small class="note">Akan dicek dalam 10 menit setelah pembayaran berhasil</small>
@@ -224,8 +224,8 @@
                     <small class="rek-title">Atas Nama: </small>
                   </div>
                   <div class="rek-content d-flex justify-content-between mt-1">
-                    <small class="no-rek">098 2937 9823 2341</small>
-                    <small class="salin-rek">Moh. Najib Fikri</small>
+                    <small class="no-rek">988 2187 9823 2332</small>
+                    <small class="salin-rek">Jesica Maha</small>
                   </div>
                   <div class="divider"></div>
                   <small class="note">Akan dicek dalam 10 menit setelah pembayaran berhasil</small>
