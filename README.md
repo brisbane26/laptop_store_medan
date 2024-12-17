@@ -21,93 +21,93 @@ Forgot Password
 Level User
 
 1.	Costumer
-   	-melihat product
-	-mencari product
-	-menambahkan keranjang
-	-melihat daftar product yang masuk ke keranjang
-	-checkout barang yang ada pada cart
-	-melihat detail pemesanan
-	-melakukan pembayaran
-	-melihat status pesanan
-	-melakukan pemesanan service
-	-melihat Riwayat pesanan
-	-mendownload struk pesanan
-
+- melihat product
+-mencari product
+-menambahkan keranjang
+-melihat daftar product yang masuk ke keranjang
+-checkout barang yang ada pada cart
+-melihat detail pemesanan
+-melakukan pembayaran
+-melihat status pesanan
+-melakukan pemesanan service
+-melihat Riwayat pesanan
+-mendownload struk pesanan
 
 2.	Admin
-	-melihat peningkatan penjualan (dashboard)
-	-melihat user
-	-melihat daftar product
-	-mencari product
-	-mengelola product
-	-mengelola service
-	-melihat daftar pesanan
-	-melihat Riwayat pesanan
-	-mengkonfirmasi pesanan
-
+-melihat peningkatan penjualan (dashboard)
+-melihat user
+-melihat daftar product
+-mencari product
+-mengelola product
+-mengelola service
+-melihat daftar pesanan
+-melihat Riwayat pesanan
+-mengkonfirmasi pesanan
 
 3.	Owner
-	-melihat product
-	-mengelola product
-	-melihat peningkatan penjualan
-	-mengelola admin
-	-mengelola costumer
-	-melihat daftar pesanan
-	-melihat Riwayat pesanan
-	-melihat Logs Admin
+-melihat product
+-mengelola product
+-melihat peningkatan penjualan
+-mengelola admin
+-mengelola costumer
+-melihat daftar pesanan
+-melihat Riwayat pesanan
+-melihat Logs Admin
 
 
 ## Installation
 
-To run Laracoffee locally, follow these steps:
+To run Laptop Store Medan di device anda, lakukan:
+
 
 1. Clone this repository:
 
-   bash
-   git clone https://github.com/brisbane26/laptop_store_medan.git
-   
+   ```bash
+   git clone https://github.com/brisbane26/laptop_store_medan.com.
+   ```
 2. Change to the project directory
-    bash
+    ```bash
     cd laptop_store_medan
-    
+    ```
 3. Install the project dependencies
-    bash
+    ```bash
     composer install
     npm install
-    
+    ```
 4. Copy the .env.example file to .env and configure your environment variables, including your database settings and any other necessary configuration.
-    bash
+    ```bash
     copy .env.example .env
-    
+    ```
 5. Generate an application key
-    bash
+    ```bash
     php artisan key:generate
-    
+    ```
 
 6. Create a symbolic link for the storage directory
-   bash
+   ```bash
    php artisan storage:link
-   
+   ```
 8. Set the filesystem disk to public in the .env file
-   bash
+   ```bash
    FILESYSTEM_DISK=public
-   
+   ```
 6. Migrate the database
-    bash
+    ```bash
     php artisan migrate
-    
+    ```
 7. Seed the database with sample data (optional):
-    bash
+    ```bash
     php artisan db:seed RoleSeeder
-
+    ```
 8. Seed the database with sample data (optional):
-    bash
-    php artisan db:seed 
+    ```bash
+    php artisan db:seed
+    ```
     
 9. Start the development server
-    bash
+    ```bash
     php artisan serve
-    
+    ```
 10. Access the application in your browser at http://localhost:8000
 
 
