@@ -91,7 +91,6 @@
                                 <p class="price">Rp.{{ number_format($discounted_price, 0, ',', '.') }}</p>
                                 <!-- Tombol Pesan yang mengarah ke login -->
                                 <a href="/auth/login" class="product-button"><i class="fa fa-plus"></i> Pesan</a>
-                                <button data-id="{{ $row->product_id }}" class="detail-button">Detail</button>
                             </div>
                         </div>
                     </div>
