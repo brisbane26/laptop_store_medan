@@ -431,6 +431,37 @@ class ProductSeeder extends Seeder
         "updated_by" => null,
         ]);
 
+        Product::create([
+            "product_name" => "Logitech G203",
+            "category" => "others",
+            "orientation" => "Wired Mouse.",
+            "description" => "
+                Mouse dengan tampilan menarik, memakai kabel.  
+            ",
+            "buy_price" => 100000,
+            "sell_price" => 150000,
+            "stock" => 50,
+            "discount" => 0,
+            "image" => "product/Logitech.jpg",
+            "created_by" => 1,
+            "updated_by" => null,
+            ]);
+
+            Product::create([
+                "product_name" => "Sandisk 64GB",
+                "category" => "others",
+                "orientation" => "Flashdisk terbaik.",
+                "description" => "
+                    Flashdisk dengan penyimpanan yang banyak
+                ",
+                "buy_price" => 120000,
+                "sell_price" => 180000,
+                "stock" => 60,
+                "discount" => 0,
+                "image" => "product/Sandisk_64GB.jpg",
+                "created_by" => 1,
+                "updated_by" => null,
+                ]);
 
     }
 }

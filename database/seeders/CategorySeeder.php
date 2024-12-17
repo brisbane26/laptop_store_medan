@@ -30,5 +30,9 @@ class CategorySeeder extends Seeder
         Category::create([
             "category_name" => "Server Maintanance",
         ]);
+        
+        Category::create([
+            "category_name" => "Others",
+        ]);
     }
 }
