@@ -88,28 +88,32 @@ To run Laptop Store Medan di device anda, lakukan:
    ```bash
    php artisan storage:link
    ```
-8. Set the filesystem disk to public in the .env file
+7. Set the filesystem disk to public in the .env file
    ```bash
    FILESYSTEM_DISK=public
    ```
-6. Migrate the database
+8. Create your own API Key on RajaOngkir and set API_RAJAONGKIR in the .env
+   ```bash
+    API_RAJAONGKIR=7be3da5344308d8be3d76141bff11f72
+     ```
+9. Migrate the database
     ```bash
     php artisan migrate
     ```
-7. Seed the database with sample data (optional):
+10. Seed the database with sample data (optional):
     ```bash
     php artisan db:seed RoleSeeder
     ```
-8. Seed the database with sample data (optional):
+11. Seed the database with sample data (optional):
     ```bash
     php artisan db:seed
     ```
     
-9. Start the development server
+12. Start the development server
     ```bash
     php artisan serve
     ```
-10. Access the application in your browser at http://localhost:8000
+13. Access the application in your browser at http://localhost:8000
 
 
 ## Technologies
