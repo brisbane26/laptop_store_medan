@@ -17,7 +17,7 @@ class ProductLogController extends Controller
     public function index()
     {
         // Ambil semua data dari product_logs
-        $logs = ProductLog::select('id', 'action', 'old_value', 'new_value', 'admin_name', 'date')->get();
+        $logs = ProductLog::select('id', 'action', 'old_value', 'new_value', 'admin_name', 'date')->paginate(10);
         
         // Tampilkan ke halaman view
         return view('product_logs.index', compact('logs'));

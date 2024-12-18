@@ -16,16 +16,19 @@
         </thead>
         <tbody>
             @foreach ($logs as $log)
-                <tr>        
-                    <td>{{ $log->id }}</td>
-                    <td>{{ $log->action }}</td>
-                    <td>{{ $log->old_value }}</td>
-                    <td>{{ $log->new_value }}</td>
-                    <td>{{ $log->admin_name }}</td>
-                    <td>{{ $log->date }}</td>
+            <tr>        
+                <td>{{ $log->id }}</td>
+                <td>{{ $log->action }}</td>
+                <td>{{ $log->old_value }}</td>
+                <td>{{ $log->new_value }}</td>
+                <td>{{ $log->admin_name }}</td>
+                <td>{{ $log->date }}</td>
                 </tr>
             @endforeach
         </tbody>
     </table>
+</div>
+<div class="d-flex justify-content-center mt-4">
+    {{ $logs->links() }}
 </div>
 @endsection
