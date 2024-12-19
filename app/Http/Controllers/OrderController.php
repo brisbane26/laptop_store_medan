@@ -19,7 +19,7 @@ class OrderController extends Controller
         // Mengembalikan hasil total harga
         return $result[0]->total_price;
     }
-
+    
     public function makeOrderGet()
     {
         $userId = auth()->id();
@@ -30,7 +30,7 @@ class OrderController extends Controller
             'cartItems' => $cartItems, // Kirimkan semua item di keranjang
         ]);
     }
-
+    
     public function makeOrderPost(Request $request)
     {
         $rules = [
@@ -45,7 +45,7 @@ class OrderController extends Controller
             'quantity.*' => 'required|numeric|min:1',
             'price.*' => 'required|numeric|min:0',
         ];
-
+    
         $messages = [
             'product_id.*.required' => 'Product ID is required.',
             'quantity.*.min' => 'Quantity must be at least 1.',
@@ -53,13 +53,13 @@ class OrderController extends Controller
             'bank_id.required' => 'Please select a valid bank.',
             'bank_id.exists' => 'The selected bank is invalid.',
         ];
-
+    
         if ($request->payment_method == 1) {
             $rules['bank_id'] = 'required|numeric|exists:banks,id';
         }
-
+    
         $validatedData = $request->validate($rules, $messages);
-
+    
         foreach ($validatedData['product_id'] as $index => $productId) {
             $product = Product::findOrFail($productId);
             if ($product->stock < $validatedData['quantity'][$index]) {
@@ -68,7 +68,7 @@ class OrderController extends Controller
                 ])->withInput();
             }
         }
-
+    
         DB::transaction(function () use ($validatedData) {
             $order = Order::create([
                 'user_id' => auth()->id(),
@@ -83,7 +83,7 @@ class OrderController extends Controller
                 'coupon_used' => $validatedData['coupon_used'],
                 'bank_id' => $validatedData['payment_method'] == 1 ? $validatedData['bank_id'] : null,
             ]);
-
+    
             foreach ($validatedData['product_id'] as $index => $productId) {
                 OrderDetail::create([
                     'order_id' => $order->id,
@@ -91,15 +91,15 @@ class OrderController extends Controller
                     'quantity' => $validatedData['quantity'][$index],
                     'price' => $validatedData['price'][$index],
                 ]);
-
+    
                 Product::where('id', $productId)->decrement('stock', $validatedData['quantity'][$index]);
             }
-
+    
             Cart::where('user_id', auth()->id())->delete();
         });
-
-        return redirect('/order/order_data')->with('success', 'Order successfully created!');
-    }
+    
+    return redirect('/order/order_data')->with('success', 'Order successfully created!');
+}
 
 
     public function orderData()

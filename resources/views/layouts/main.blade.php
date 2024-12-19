@@ -15,7 +15,7 @@
   @stack('css-dependencies')
 </head>
 
-<body class="sb-nav-fixed">
+<body class="sb-nav-fixed" data-is-admin="{{ auth()->check() && auth()->user()->role_id == \App\Models\Role::ADMIN_ID ? 'true' : 'false' }}">
   <div id="loading" style="display: none"></div>
   {{-- topbar --}}
   @include('/partials/topbar')
