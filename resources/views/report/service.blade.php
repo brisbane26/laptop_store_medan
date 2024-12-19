@@ -55,7 +55,17 @@
             </tr>
             @endforeach
         </tbody>
-    </table>       
+    </table>
+
+    <!-- Total Price -->
+    <div class="mt-3">
+        <h5>Total Price: Rp. {{ number_format($totalPrice, 0, ',', '.') }}</h5>
+    </div>
+
+    <!-- Navigasi Pagination -->
+    <div class="d-flex justify-content-center">
+        {{ $services->links() }}
+    </div>
 </div>
 
 @push('css-dependencies')
