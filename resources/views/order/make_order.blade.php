@@ -28,16 +28,15 @@
 
         <div class="accordion-item mb-3 px-4 py-3">
           <form action="{{ route('order.make_order') }}" method="POST">
-
             @csrf
-    
+
             <!-- Header -->
             <div class="row fw-bold mb-3">
                 <div class="col-md-4">Product Name</div>
                 <div class="col-md-4">Price per pieces</div>
                 <div class="col-md-3">Quantity</div>
             </div>
-    
+
             <!-- List Produk -->
             @foreach($cartItems as $cart)
             <div class="row align-items-center mb-2 product-row">
@@ -88,36 +87,42 @@
             </div>
             @endforeach
             
-            <div class="row mb-3">
-              <div class="col-12">Destination</div>
-              <div class="form-group col-7">
-                <select class="form-control  @error('province') is-invalid @enderror" id="province" name="province">
-                  <option value="0" selected="selected">Select Province</option>
-                </select>
-                @error('province')
-                <div class="text-danger">{{ $message }}</div>
-                @enderror
-              </div>
-              <div class="form-group col-5">
-                <select class="form-control  @error('quantity') is-invalid @enderror" id="city" name="city" disabled>
-                  <option value="0" selected="selected">Select City</option>
-                </select>
-                @error('city')
-                <div class="text-danger">{{ $message }}</div>
-                @enderror
-              </div>
-            </div>
-            <div class="form-group mb-3">
-              <label for="address">Address Detail</label>
-              <input type="hidden" name="shipping_address" id="shipping_address">
-              <input id="address" name="address" type="text" class="form-control @error('address') is-invalid @enderror"
-                value="{{ old('address', auth()->user()->address) }}">
-              @error('address')
-              <div class="text-danger">{{ $message }}</div>
-              @enderror
-            </div>
+           @if(auth()->user()->role !== 'admin')
+    <div class="row mb-3">
+        <div class="col-12">Destination</div>
+        <div class="form-group col-7">
+            <select class="form-control @error('province') is-invalid @enderror" id="province" name="province">
+                <option value="0" selected>Select Province</option>
+                <!-- Dynamic provinces -->
+            </select>
+            @error('province') <div class="text-danger">{{ $message }}</div> @enderror
+        </div>
+        <div class="form-group col-5">
+            <select class="form-control @error('quantity') is-invalid @enderror" id="city" name="city" disabled>
+                <option value="0" selected>Select City</option>
+                <!-- Dynamic cities based on province -->
+            </select>
+            @error('city') <div class="text-danger">{{ $message }}</div> @enderror
+        </div>
+    </div>
+    <div class="form-group mb-3">
+        <label for="address">Address Detail</label>
+        <input type="hidden" name="shipping_address" id="shipping_address">
+        <input id="address" name="address" type="text" class="form-control @error('address') is-invalid @enderror"
+               value="{{ old('address', auth()->user()->address) }}">
+        @error('address') <div class="text-danger">{{ $message }}</div> @enderror
+    </div>
+@else
+    <!-- Admin Location Fields -->
+    <input type="hidden" name="shipping_address" value="0">
+    <input type="hidden" name="address" value="Store Location">
+    <input type="hidden" name="payment_method" value="2">
+    <option type="hidden" name="province" value="Sumatera Utara">
+    <option type="hidden" name="city" value="Medan">
+@endif
         </div>
 
+        @cannot("is_admin")
         <!-- Online Banking -->
         <div class="accordion-item mb-3 ">
           <h2 class="h5 px-4 py-3 accordion-header d-flex justify-content-between align-items-center">
@@ -331,6 +336,7 @@
             </div>
           </div>
         </div>
+        @endcannot
         {{-- COD --}}
         <div class="accordion-item mb-3 border">
           <h2 class="h5 px-4 py-3 accordion-header d-flex justify-content-between align-items-center">
@@ -377,16 +383,17 @@
             <div class="d-flex justify-content-between mb-1 small">
               <span>Subtotal</span> <span><span>Rp. </span> <span id="sub-total">0</span></span>
             </div>
+
+            @if(auth()->user()->role !== 'admin')
             <div class="d-flex justify-content-between mb-1 small">
-              <span>Delivery</span><span>
-                <span>Rp. </span><span id="shipping" data-shippingCost="0">0</span>
-              </span>
+              <span>Delivery</span>
+              <span><span>Rp. </span><span id="shipping" data-shippingCost="0">0</span></span>
             </div>
 
             <input type="hidden" name="coupon_used" id="coupon_used" value="0">
-
+            <!-- Coupon section for regular customers -->
             <div class="d-flex justify-content-between mb-1 small">
-              <span>Coupon
+              <span>Coupon 
                 @if (auth()->user()->coupon == 0)
                 (no coupon)
                 @else
@@ -398,14 +405,15 @@
                 </span>
                 )
                 @endif
-              </span><span><span></span><span id="coupon" data-valueCoupon="{{ auth()->user()->coupon }}">
-                  {{ auth()->user()->coupon }} Coupon
-                </span></span>
+              </span>
+              <span id="coupon" data-valueCoupon="{{ auth()->user()->coupon }}">
+                {{ auth()->user()->coupon }} Coupon
+              </span>
             </div>
-            @if (auth()->user()->coupon != 0)
-            <div class="d-flex justify-content-between mb-1 small text-danger">
-              <span>Coupon used</span> <span><span id="couponUsedShow">0 coupon</span></span>
-            </div>
+            @else
+            <!-- Admin/Cashier version - no shipping or coupons -->
+            <input type="hidden" name="shipping_cost" value="0">
+            <input type="hidden" name="coupon_used" value="0">
             @endif
           </div>
           <hr>

@@ -47,10 +47,25 @@ function calculateSubtotal() {
 }
 
 // Fungsi untuk memperbarui data pengiriman setelah lokasi berubah
+// Fungsi untuk memperbarui data pengiriman setelah lokasi berubah
 function updateShipping(destination) {
     const origin = 278; // ID asal (Kota Medan)
     const quantity = parseInt(document.querySelector(".quantity").value) || 1;
     const courier = "jne";
+
+    // Ambil informasi apakah user adalah admin
+    const isAdmin = document.body.getAttribute('data-is-admin') === 'true';
+
+    // Jika admin, set ongkir ke 0
+    if (isAdmin) {
+        const shippingElement = document.getElementById("shipping");
+        shippingElement.setAttribute("data-shippingCost", 0);
+        shippingElement.innerText = new Intl.NumberFormat("id-ID").format(0);
+
+        // Hitung ulang subtotal dan total
+        calculateSubtotal();
+        return; // Tidak perlu melanjutkan penghitungan ongkir via API
+    }
 
     // Validasi destination
     if (!destination || quantity <= 0) {
@@ -82,6 +97,7 @@ function updateShipping(destination) {
         },
     });
 }
+
 
 // Fungsi untuk mengatur event listener saat lokasi berubah
 function setupLocationListeners() {
