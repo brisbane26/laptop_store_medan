@@ -33,21 +33,31 @@
             </tr>
         </thead>
         <tbody>
-            @foreach ($reports as $report)
+            @foreach ($orders as $order)
             <tr>
-                <td>{{ $report['id'] }}</td>
-                <td>{{ $report['customer_name'] }}</td>
+                <td>{{ $order['id'] }}</td>
+                <td>{{ $order['customer_name'] }}</td>
                 <td>
-                    @foreach ($report['products'] as $product)
+                    @foreach ($order['products'] as $product)
                         {{ $product['name'] }} ({{ $product['quantity'] }})<br>
                     @endforeach
                 </td>
-                <td>Rp. {{ number_format($report['total_price'], 0, ',', '.') }}</td>
-                <td>{{ $report['date'] }}</td>
+                <td>Rp. {{ number_format($order['total_price'], 0, ',', '.') }}</td>
+                <td>{{ $order['date'] }}</td>
             </tr>
-            @endforeach
+            @endforeach            
         </tbody>
     </table>
+
+    <!-- Total Sales -->
+    <div class="mt-3">
+        <h5>Total Sales: Rp. {{ number_format($totalSales, 0, ',', '.') }}</h5>
+    </div>
+</div>
+
+<!-- Navigasi Pagination -->
+<div class="d-flex justify-content-center">
+    {{ $orders->links() }}
 </div>
 
 @push('css-dependencies')
