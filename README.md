@@ -9,7 +9,7 @@
 - Petra Igor Keliat- 231402070<br>
 - Pangeran Rae Ebenezer Siahaan - 231402079<br>
 - Jesica Eldamaris Maha- 231402101<br>  
-- Fatimah Azzahra - 231402104<br>  
+- Fatimah Az Zahra - 231402104<br>  
 
 ## Desc
 
