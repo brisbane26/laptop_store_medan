@@ -70,6 +70,17 @@
                 <div class="sb-nav-link-icon"><i class="fas fa-fw fa-list-alt"></i></div>
                 Logs
             </a>
+            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReports" aria-expanded="false" aria-controls="collapseReports">
+                <div class="sb-nav-link-icon"><i class="fas fa-fw fa-chart-line"></i></div>
+                Reports
+                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-fw fa-angle-down"></i></div>
+            </a>
+            <div class="collapse" id="collapseReports" aria-labelledby="headingOne">
+                <nav class="sb-sidenav-menu-nested nav">
+                    <a class="nav-link" href="{{ route('report.index') }}">Sales Report</a>
+                    <a class="nav-link" href="{{ route('report.service') }}">Service Report</a>
+                </nav>
+            </div>            
             @endcan
 
             @cannot("is_admin")
