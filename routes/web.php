@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController, LandingController, ServiceController, ProductLogController};
+use App\Http\Controllers\{AuthController, CartController, HomeController, OrderController, PointController, ReviewController, ProductController, ProfileController, RajaOngkirController, TransactionController, UserController, AdminController, LandingController, ServiceController, ProductLogController, ReportController};
 
 /*
 |--------------------------------------------------------------------------
@@ -265,3 +265,8 @@ Route::middleware(['auth'])->group(function () {
     Route::middleware(['can:is_owner'])->group(function () {
         Route::get('/product-logs', [ProductLogController::class, 'index'])->name('product-logs.index');
     });
+
+    Route::get('/report', [ReportController::class, 'index'])->name('report.index');
+    Route::get('/report/service', [ReportController::class, 'service'])->name('report.service');
+
+    
