@@ -92,7 +92,7 @@ To run Laptop Store Medan di device anda, lakukan:
    ```bash
    FILESYSTEM_DISK=public
    ```
-8. Create your own API Key on RajaOngkir and set API_RAJAONGKIR in the .env
+8. Create your own API Key at RajaOngkir and set API_RAJAONGKIR in the .env
    ```bash
     API_RAJAONGKIR=7be3da5344308d8be3d76141bff11f72
      ```

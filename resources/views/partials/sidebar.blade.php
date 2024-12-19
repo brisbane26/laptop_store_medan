@@ -115,6 +115,14 @@
                 <div class="sb-nav-link-icon"><i class="fa-solid fa-fw fa-dumpster"></i></div>
                 Product
             </a>
+
+            @if (auth()->user()->role_id == 1)
+            <a class="nav-link" href="/cart">
+                <div class="sb-nav-link-icon"><i class="fa-solid fa-shopping-cart"></i></div>
+                Cart
+            </a>
+            @endif
+
             <!-- Menu Cart hanya untuk role_id 2 -->
             @if (auth()->user()->role_id == 2)
             <a class="nav-link" href="/cart">
