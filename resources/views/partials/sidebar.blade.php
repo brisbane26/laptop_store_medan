@@ -124,6 +124,7 @@
             </a>
             @endif
 
+            @cannot("is_owner")
             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayoutsOrder"
             aria-expanded="false" aria-controls="collapseLayoutsOrder">
               <div class="sb-nav-link-icon"><i class="fas fa-fw fa-columns"></i></div>
@@ -132,16 +133,12 @@
           </a>
           <div class="collapse" id="collapseLayoutsOrder" aria-labelledby="headingOne">
               <nav class="sb-sidenav-menu-nested nav">
-                  @can("is_owner")
-                      <!-- Hanya tampilkan Order History untuk Owner -->
-                      <a class="nav-link" href="/order/order_history">Order History</a>
-                  @else
                       <!-- Tampilkan Order Data dan Order History untuk Admin atau role lain -->
                       <a class="nav-link" href="/order/order_data">Order Data</a>
                       <a class="nav-link" href="/order/order_history">Order History</a>
-                  @endcan
               </nav>
           </div>
+          @endcannot
         </div>
     </div>
     <div class="sb-sidenav-footer">
