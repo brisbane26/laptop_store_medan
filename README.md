@@ -94,7 +94,7 @@ To run Laptop Store Medan di device anda, lakukan:
    ```
 8. Create your own API Key at RajaOngkir and set API_RAJAONGKIR in the .env
    ```bash
-    API_RAJAONGKIR=7be3da5344308d8be3d76141bff11f72
+    API_RAJAONGKIR=
      ```
 9. Migrate the database
     ```bash
